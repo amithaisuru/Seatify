@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DarkModeToggle from '../components/DarkModeToggle';
+import Toast from '../components/Toast';
 
 function Signup() {
   const [email, setEmail] = useState('');
@@ -9,6 +10,8 @@ function Signup() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState({});
   
+  const [toast, setToast] = useState({ show: false, type: '', message: '' });
+
   // frontend input validation
   const inputValidate=()=> {
     const Errors = {};
@@ -29,6 +32,7 @@ function Signup() {
     // if there is no error, return true
     return Object.keys(Errors).length === 0;
   }
+
   const handleSignup = async (e) => {
     e.preventDefault();
 
@@ -40,20 +44,36 @@ function Signup() {
 
     setMessages({}); // Clear previous messages
 
-    console.log(email,password,userType)
-    const response = await fetch('http://localhost:5000/signup', {
+    try 
+    {
+      const response = await fetch('http://localhost:5000/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, user_type: userType }),
-    });
-    alert('Signup request sent!')
+      });
 
-    if (response.ok) {
-      alert('Signup successful! Please login.');
-      navigate('/login');
-    } else {
-      alert('Signup failed.');
-      navigate('/signup');
+      const data= await response.json();
+
+      if (response.ok) {
+        console.log('Login successful:', data);
+        setToast({ show: true, type: 'success', message: 'Login successful!' });
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000); // Small delay so toast shows before redirect
+      } 
+      else {
+        setToast({ show: true, type: 'error', message: 'Login failed!' });
+        console.log('Login failed:', data.message);
+        setTimeout(() => {
+          navigate('/signup');
+        }, 3000); // Small delay so toast shows before redirect
+        }}
+
+      
+      catch(error) {
+        console.error('Network or unexpected error:', error);
+        setToast({ show: true, type: 'error', message: 'Network error! Please try again later.' });
+        
     }
   };
 
@@ -138,6 +158,13 @@ function Signup() {
       </div>
     </div>
   </div>
+  {toast.show && (
+    <Toast
+      type={toast.type}
+      message={toast.message}
+      onClose={() => setToast({ ...toast, show: false })}
+    />
+  )}
 </>
   );
 }

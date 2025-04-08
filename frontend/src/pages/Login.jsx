@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import jwt_decode from 'jwt-decode';
 import DarkModeToggle from '../components/DarkModeToggle';
+import Toast from '../components/Toast'; // Import your Toast component
 
 function Login() {
   const { login } = useContext(AuthContext);
@@ -10,6 +11,9 @@ function Login() {
   const [email, setEmail] = useState('user1@example.com');
   const [password, setPassword] = useState('password123');
   const [messages, setMessages] = useState({});
+
+  const [toast, setToast] = useState({ show: false, type: '', message: '' });
+
 
   const inputValidate=()=> {
     const Errors = {};
@@ -37,7 +41,7 @@ function Login() {
 
     setMessages({}); // Clear previous messages
 
-    const response = await fetch('http://localhost:5000/login', {
+    try{const response = await fetch('http://localhost:5000/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -46,8 +50,8 @@ function Login() {
     const data = await response.json();
 
     if (response.ok) {
-      console.log('Login successful:', data);
-      alert(data.message)
+      // alert(data.message)
+      setToast({ show: true, type: 'success', message: 'Login successful!' });
       console.log(response.message)
       login(data.access_token);
       const decoded = jwt_decode(data.access_token);
@@ -56,15 +60,21 @@ function Login() {
       const userType = decoded.user_type;
       console.log('User type:', userType);
 
-      if (userType === 1) {
-        navigate('/profile');
-      } else {
-        navigate('/details');
-      }
+      setTimeout(() => {
+        if (userType === 1) {
+          navigate('/profile');
+        } else {
+          navigate('/details');
+        }
+      }, 3000); // Small delay so toast shows before redirect
     } else {
-      alert('Login failed!', data.message);
+      setToast({ show: true, type: 'error', message: 'Login failed!' });
+      console.log('Login failed:', data.message);}
     }
-    
+    catch (error) {
+      console.error('Network or unexpected error:', error);
+      setToast({ show: true, type: 'error', message: 'Network error! Please try again later.' });
+    }
   };
 
   return (
@@ -134,7 +144,15 @@ function Login() {
           </form>
         </div>
       </div>
+      
     </div>
+    {toast.show && (
+      <Toast
+        type={toast.type}
+        message={toast.message}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
+    )}
     </>
   );
 }
