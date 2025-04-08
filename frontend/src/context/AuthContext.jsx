@@ -10,26 +10,26 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true); // 👈 Add loading state
 
   useEffect(() => {
-    // // const storedToken = sessionStorage.getItem('token');
-    // // if (storedToken) {
-    // //   const decoded = jwt_decode(storedToken);
-    // //   const currentTime = Date.now() / 1000;
+    const storedToken = sessionStorage.getItem('token');
+    if (storedToken) {
+      const decoded = jwt_decode(storedToken);
+      const currentTime = Date.now() / 1000;
 
-    // //   if (decoded.exp < currentTime) {
-    // //     console.log('Token expired:', decoded.exp);
-    // //     sessionStorage.removeItem('token');
-    // //     setToken(null);
-    // //     setUser(null);
-    // //   } else {
-    // //     console.log('Token valid:', decoded.exp);
-    // //     setToken(storedToken);
-    // //     setUser({
-    // //       id: decoded.sub,
-    // //       user_type: decoded.user_type
-    // //     });
-    // //   }
-    // }
-    // setLoading(false); // ✅ Done checking token
+      if (decoded.exp < currentTime) {
+        console.log('Token expired:', decoded.exp);
+        sessionStorage.removeItem('token');
+        setToken(null);
+        setUser(null);
+      } else {
+        console.log('Token valid:', decoded.exp);
+        setToken(storedToken);
+        setUser({
+          id: decoded.sub,
+          user_type: decoded.user_type
+        });
+      }
+    }
+    setLoading(false); // ✅ Done checking token
   }, []);
 
   const login = (newToken) => {
