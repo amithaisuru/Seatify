@@ -37,7 +37,7 @@ function Login() {
         navigate('/details');
       }
     } else {
-      alert('Login failed!');
+      alert('Login failed!', data.message);
     }
     
   };
