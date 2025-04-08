@@ -1,1 +1,0 @@
-Seatify App
