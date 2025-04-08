@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-// import jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import DarkModeToggle from '../components/DarkModeToggle';
 
 function Login() {
@@ -12,34 +12,34 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
-    // const response = await fetch('http://localhost:5000/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email, password }),
-    // });
+    const response = await fetch('http://localhost:5000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-    // const data = await response.json();
+    const data = await response.json();
 
-    // if (response.ok) {
-    //   console.log('Login successful:', data);
-    //   alert(data.message)
-    //   console.log(response.message)
-    //   login(data.access_token);
-    //   const decoded = jwt_decode(data.access_token);
-    //   console.log('Decoded token:', decoded); 
+    if (response.ok) {
+      console.log('Login successful:', data);
+      alert(data.message)
+      console.log(response.message)
+      login(data.access_token);
+      const decoded = jwt_decode(data.access_token);
+      console.log('Decoded token:', decoded); 
 
-    //   const userType = decoded.user_type;
-    //   console.log('User type:', userType);
+      const userType = decoded.user_type;
+      console.log('User type:', userType);
 
-    //   if (userType === 1) {
-    //     navigate('/profile');
-    //   } else {
-    //     navigate('/details');
-    //   }
-    // } else {
-    //   alert('Login failed!');
-    // }
-    navigate('/signup')
+      if (userType === 1) {
+        navigate('/profile');
+      } else {
+        navigate('/details');
+      }
+    } else {
+      alert('Login failed!');
+    }
+    
   };
 
   return (
@@ -100,6 +100,9 @@ function Login() {
             >
               Sign in
             </button>
+            <div className='font-medium text-sm text-gray-600 dark:text-gray-400 text-center mt-2 flex justify-between'>
+           <p> Don't have an account?</p><a href="/signup" className='underline'>Signup</a>
+            </div>
           </div>
         </form>
       </div>
