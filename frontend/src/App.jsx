@@ -8,6 +8,7 @@ import Details from './pages/customer/Details';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoutes';
 import DarkModeToggle from './components/DarkModeToggle';
+import CustomerHome from './pages/customer/CustomerHomePage';
 
 function App() {
   const location = useLocation();
@@ -44,6 +45,11 @@ function App() {
           <Route path="/details" element={
             <ProtectedRoute>
               <Details />
+            </ProtectedRoute>
+          } /> 
+          <Route path="/homepage" element={
+            <ProtectedRoute>
+              <CustomerHome />
             </ProtectedRoute>
           } /> 
         </Routes>
