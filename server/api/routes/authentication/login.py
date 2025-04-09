@@ -23,7 +23,7 @@ def login():
         access_token = create_access_token(
             identity=str(user.id),
             additional_claims={"user_type": user.user_type},
-            expires_delta=timedelta(seconds=10) 
+            expires_delta=timedelta(seconds=100) 
         )
 
         return jsonify({
