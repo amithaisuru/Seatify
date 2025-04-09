@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DarkModeToggle from '../components/DarkModeToggle';
 import Toast from '../components/Toast';
@@ -11,6 +11,14 @@ function Signup() {
   const [messages, setMessages] = useState({});
   
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
+
+  const [cafeName, setCafeName] = useState('');
+  const [location, setLocation] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+
+  // store fetched locations
+  const [locations, setLocations] = useState([]);
+
 
   // frontend input validation
   const inputValidate=()=> {
@@ -28,11 +36,17 @@ function Signup() {
       Errors.userType = 'Please select user type !'
 
     }
+    if (userType === 2) {
+      if (!cafeName) Errors.cafeName = 'Please enter cafe name!';
+      if (!location) Errors.location = 'Please enter location!';
+      if (!contactNumber) Errors.contactNumber = 'Please enter contact number!';
+    }
     setMessages(Errors);
     // if there is no error, return true
     return Object.keys(Errors).length === 0;
   }
 
+  // handle signup
   const handleSignup = async (e) => {
     e.preventDefault();
 
@@ -42,6 +56,19 @@ function Signup() {
       return;
     }
 
+    const bodyData = {
+      email,
+      password,
+      user_type: userType
+    };
+
+    if (userType === 2) {
+      bodyData.cafe_name = cafeName;
+      bodyData.location = location;
+      bodyData.contact_number = contactNumber;
+    }
+    console.log(bodyData)
+
     setMessages({}); // Clear previous messages
 
     try 
@@ -49,7 +76,7 @@ function Signup() {
       const response = await fetch('http://localhost:5000/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, user_type: userType }),
+      body: JSON.stringify(bodyData),
       });
 
       const data= await response.json();
@@ -67,15 +94,33 @@ function Signup() {
         setTimeout(() => {
           navigate('/signup');
         }, 3000); // Small delay so toast shows before redirect
-        }}
-
-      
+        }
+    }
       catch(error) {
         console.error('Network or unexpected error:', error);
         setToast({ show: true, type: 'error', message: 'Network error! Please try again later.' });
         
     }
   };
+
+  const fetchLocations = async (e) =>{
+    try {
+      const response = await fetch('http://localhost:5000/locations', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      console.log('Locations:', data.locations);
+      setLocations(data.locations)
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+
+  };
+
+  useEffect(() => {
+    fetchLocations();
+  },[]);
 
   return (
 <>
@@ -101,6 +146,7 @@ function Signup() {
                 autoComplete="email"
                 required
                 value={email}
+                placeholder="Enter your email"
                 onChange={e => setEmail(e.target.value)}
                 className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
               />
@@ -119,7 +165,7 @@ function Signup() {
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                required
+                placeholder="Enter a Strong Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)} 
                 className="block w-full rounded-md border-0 px-1.5 py-1.5  text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6  dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
@@ -139,12 +185,65 @@ function Signup() {
               className="block w-full rounded-md border-0 px-1.5 py-1.5  text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6  dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
               value={userType} 
               onChange={e => setUserType(Number(e.target.value))}>
-                <option value={1}>User Type 1</option>
-                <option value={2}>User Type 2</option>
+                <option value={1}>Customer</option>
+                <option value={2}>Cafe</option>
             </select>  
           </div>
           {messages.userType && <p className="text-red-500 text-sm mt-2">{messages.userType}</p>}
           </div>
+        {userType === 2 && (
+          <>
+          <div>
+            <label className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400 mt-4">
+              Cafe/Restaurant Name
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                value={cafeName}
+                onChange={e => setCafeName(e.target.value)}
+                className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
+                placeholder="Enter Cafe or Restaurant Name"
+              />
+            </div>
+            {messages.cafeName && <p className="text-red-500 text-sm mt-2">{messages.cafeName}</p>}
+          </div>
+          <div>
+            <label className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400 mt-4">
+              Location
+            </label>
+            <div className="mt-2">
+            <select
+              className="block w-full rounded-md border-0 px-1.5 py-1.5  text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6  dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
+              value={location} 
+              placeholder="Enter Location"
+              onChange={e => setLocation(Number(e.target.value))}>
+                <option value="">Select Location</option>
+                {locations.map((loc)=>(
+                  <option key={loc.id} value={loc.id}>
+                    {loc.location}
+                  </option>))}
+            </select> 
+            </div>
+            {messages.location && <p className="text-red-500 text-sm mt-2">{messages.location}</p>}
+          </div>
+          <div>
+            <label className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400 mt-4">
+              Contact Number
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                value={contactNumber}
+                onChange={e => setContactNumber(e.target.value)}
+                className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
+                placeholder="Enter Contact Number"
+              />
+            </div>
+            {messages.contactNumber && <p className="text-red-500 text-sm mt-2">{messages.contactNumber}</p>}
+          </div>
+          </>
+          )}
           <div>
             <button
               type="submit"
