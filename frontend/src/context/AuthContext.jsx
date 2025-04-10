@@ -20,7 +20,8 @@ export function AuthProvider({ children }) {
         sessionStorage.removeItem('token');
         setToken(null);
         setUser(null);
-      } else {
+      } 
+      else {
         console.log('Token valid:', decoded.exp);
         setToken(storedToken);
         setUser({

@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut,X } from 'lucide-react'; 
+import { LogOut,X } from 'lucide-react';
+import Toast from './Toast';
 
 function Sidebar({ isOpen, setIsOpen }) {
   const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [toast, setToast] = useState({ show: false, type: '', message: '' });//toast messages
+
   console.log('User from Sidebar:', user); // Debugging line
 
   if (!user) {
@@ -13,8 +16,13 @@ function Sidebar({ isOpen, setIsOpen }) {
   }
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    // Show toast message
+    setToast({ show: true, type: 'success', message: 'Logout successful!' });
+    
+    setTimeout(() => {
+      logout();
+    }
+    , 1000);
   };
 
   return (
@@ -33,10 +41,10 @@ function Sidebar({ isOpen, setIsOpen }) {
           md:static md:translate-x-0 md:flex md:flex-col`}
       >
         <div className="flex items-center justify-between h-16 border-b border-gray-300 dark:border-primary-darker px-4">
-          {/* <h3 className="font-sans text-xl font-semibold text-gray-800 dark:text-white tracking-wide">
+          {/* <h3 className="font-sans text-sm font-semibold text-gray-800 dark:text-white tracking-wide">
             Seatify
           </h3> */}
-          <h3 className="text-center text-3xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter font-sans">
+          <h3 className="text-center text-2xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter font-sans">
             Seatify
         </h3>
           {/* Mobile Close Button */}
@@ -49,22 +57,36 @@ function Sidebar({ isOpen, setIsOpen }) {
         <div className="flex flex-col flex-1 justify-between px-4 py-6 overflow-y-auto">
           <ul className="space-y-4">
             {user.user_type === 1 && (
+              <ul>
               <li>
                 <Link 
                   to="/profile"
                   onClick={() => setIsOpen(false)}  // close menu after click
-                  className="text-xl block px-4 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
                   Profile
                 </Link>
               </li>
+              <li>
+                <Link 
+                  to="/homepage"
+                  onClick={() => setIsOpen(false)}  // close menu after click
+                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                >
+                  HomePage
+                </Link>
+              </li>
+              </ul>
+
+              
+              
             )}
             {user.user_type === 2 && (
               <li>
                 <Link 
                   to="/details"
                   onClick={() => setIsOpen(false)}
-                  className="text-xl block px-4 py-2 bg-primary-dark text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-700 dark:hover:bg-primary-dark transition-colors duration-200"
+                  className="text-sm block px-4 py-2 bg-primary-dark text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-700 dark:hover:bg-primary-dark transition-colors duration-200"
                 >
                   Details
                 </Link>
@@ -76,7 +98,7 @@ function Sidebar({ isOpen, setIsOpen }) {
           <div className="pt-8">
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 text-xl w-full text-left px-4 py-2 text-red-600 rounded-md bg-primary-lighter dark:bg-primary-darker hover:bg-red-100 dark:hover:bg-gray-800 transition-colors duration-200"
+              className="flex items-center gap-2 text-sm w-full text-left px-4 py-2 text-red-600 rounded-md bg-primary-lighter dark:bg-primary-darker hover:bg-red-100 dark:hover:bg-gray-800 transition-colors duration-200"
             >
               <LogOut size={20} />
               Logout
@@ -84,6 +106,14 @@ function Sidebar({ isOpen, setIsOpen }) {
           </div>
         </div>
       </aside>
+      {/* Toast message */}
+      {toast.show && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
     </>
    
   );
