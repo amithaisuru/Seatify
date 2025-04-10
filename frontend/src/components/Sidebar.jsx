@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut,X } from 'lucide-react'; 
+import { LogOut,X } from 'lucide-react';
+import Toast from './Toast';
 
 function Sidebar({ isOpen, setIsOpen }) {
   const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [toast, setToast] = useState({ show: false, type: '', message: '' });//toast messages
+
   console.log('User from Sidebar:', user); // Debugging line
 
   if (!user) {
@@ -13,8 +16,13 @@ function Sidebar({ isOpen, setIsOpen }) {
   }
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    // Show toast message
+    setToast({ show: true, type: 'success', message: 'Logout successful!' });
+    
+    setTimeout(() => {
+      logout();
+    }
+    , 1000);
   };
 
   return (
@@ -98,6 +106,14 @@ function Sidebar({ isOpen, setIsOpen }) {
           </div>
         </div>
       </aside>
+      {/* Toast message */}
+      {toast.show && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
     </>
    
   );

@@ -11,7 +11,6 @@ cafes_bp = Blueprint('cafes', __name__)
 def get_cafes():
     try:
         cafes = Cafe.query.all()
-
         cafe_list = [
             {
                 "id": cafe.id,

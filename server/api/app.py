@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from config import Config
 from extensions import db, jwt, cors
 from routes.signup.signup import signup_bp
@@ -14,6 +14,30 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     jwt.init_app(app)
+    
+    # Handle missing Authorization Header
+    @jwt.unauthorized_loader
+    def missing_token_callback(error):
+        return jsonify({
+            "error": "Authorization header is missing!"
+        }), 401
+
+    # Handle expired tokens
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return jsonify({
+            "error": "Token has expired!"
+        }), 401
+
+    # Handle invalid tokens
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        return jsonify({
+            "error": "Invalid token!"
+    }), 422
+    
+
+
     cors.init_app(app, resources={r"/*": {"origins": "*"}})  # Add this line for CORS!
 
 
