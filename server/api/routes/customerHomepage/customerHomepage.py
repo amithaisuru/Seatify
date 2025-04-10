@@ -31,3 +31,30 @@ def get_cafes():
 
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
+
+@cafes_bp.route('/cafes/<int:cafe_id>', methods=['GET'])
+@jwt_required()
+def get_cafe_by_id(cafe_id):
+    try:
+        cafe = Cafe.query.get(cafe_id)
+        if not cafe:
+            return jsonify({"error": "Cafe not found"}), 404
+
+        cafe_data = {
+            "id": cafe.id,
+            "cafe_name": cafe.cafe_name,
+            "contact_number": cafe.contact_number,
+            "seats_available": 10,  # You can later make this dynamic
+            "location": {
+                "id": cafe.location.id if cafe.location else None,
+                "name": cafe.location.location if cafe.location else "Unknown"
+            }
+        }
+
+        return jsonify({"cafe": cafe_data}), 200
+
+    except SQLAlchemyError as e:
+        return jsonify({"error": "Database error", "message": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"error": "Unexpected error", "message": str(e)}), 500

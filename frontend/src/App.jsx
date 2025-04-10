@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoutes';
 import DarkModeToggle from './components/DarkModeToggle';
 import CustomerHome from './pages/customer/CustomerHomePage';
+import CafeDetails from './pages/customer/CafeDetails';
 
 function App() {
   const location = useLocation();
@@ -51,6 +52,11 @@ function App() {
           <Route path="/homepage" element={
             <ProtectedRoute>
               <CustomerHome />
+            </ProtectedRoute>
+          } /> 
+          <Route path="/cafe/:id" element={
+            <ProtectedRoute>
+              <CafeDetails/>
             </ProtectedRoute>
           } /> 
         </Routes>
