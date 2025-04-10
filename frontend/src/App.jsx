@@ -8,6 +8,7 @@ import Details from './pages/customer/Details';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoutes';
 import DarkModeToggle from './components/DarkModeToggle';
+import CustomerHome from './pages/customer/CustomerHomePage';
 
 function App() {
   const location = useLocation();
@@ -33,6 +34,7 @@ function App() {
       {shouldShowSidebar && <Sidebar  isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />}
       <div style={{ flex: 1, padding: '0px' }}>
         <Routes>
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
            {/* 🔥 Protected routes */}
@@ -44,6 +46,11 @@ function App() {
           <Route path="/details" element={
             <ProtectedRoute>
               <Details />
+            </ProtectedRoute>
+          } /> 
+          <Route path="/homepage" element={
+            <ProtectedRoute>
+              <CustomerHome />
             </ProtectedRoute>
           } /> 
         </Routes>
