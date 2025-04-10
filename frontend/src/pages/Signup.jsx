@@ -86,14 +86,14 @@ function Signup() {
         setToast({ show: true, type: 'success', message: 'Login successful!' });
         setTimeout(() => {
           navigate('/login');
-        }, 3000); // Small delay so toast shows before redirect
+        }, 2000); // Small delay so toast shows before redirect
       } 
       else {
         setToast({ show: true, type: 'error', message: 'Login failed!' });
         console.log('Login failed:', data.message);
         setTimeout(() => {
           navigate('/signup');
-        }, 3000); // Small delay so toast shows before redirect
+        }, 2000); // Small delay so toast shows before redirect
         }
     }
       catch(error) {
@@ -113,6 +113,8 @@ function Signup() {
       console.log('Locations:', data.locations);
       setLocations(data.locations)
     } catch (error) {
+      // Handle network errors or other unexpected errors
+      setToast({ show: true, type: 'error', message: 'Error fetching locations' });
       console.error('Error fetching locations:', error);
     }
 

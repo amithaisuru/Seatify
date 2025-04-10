@@ -2,13 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useContext } from 'react';
+import Toast from '../../components/Toast'; // Import your Toast component
 
 function CustomerHome() {
+  const { token } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
+
   const [cafes, setCafes] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAvailable, setFilterAvailable] = useState(false);
   const navigate = useNavigate();
-  const { token } = useContext(AuthContext);
+
+  const [toast, setToast] = useState({ show: false, type: '', message: '' });//toast messages
 
   // Hardcoded cafes instead of fetching from API
 //   useEffect(() => {
@@ -47,27 +52,53 @@ function CustomerHome() {
 //     setCafes(dummyCafes);
 //   }, []);
 // Fetch cafes from backend
-    const fetchCafes = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/cafes',{
-                method: 'GET',
-                headers: { 
-                'Content-Type': 'application/json' ,
-                'Authorization': `Bearer ${token}`}
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setCafes(data.cafes);
-                
-            } else {
-                console.error('Failed to fetch cafes');
 
-            }
-            } 
-        catch (error) {
-            console.error('Error fetching cafes:', error);
-        }
+  const delayLogout = () => {
+      setTimeout(() => {
+        logout();
+      }, 2000);
     };
+
+  const fetchCafes = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/cafes',{
+          method: 'GET',
+          headers: { 
+          'Content-Type': 'application/json' ,
+          'Authorization': `Bearer ${token}`}
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+          setCafes(data.cafes);
+      } else {
+        if (data.error === "Token has expired!") {
+          console.error('Token expired. Redirecting to login...');
+          setToast({ show: true, type: 'error', message: 'Token expired. Please log in again.' });
+          delayLogout(); // Call the delayLogout function             
+        } 
+        else if (data.error === "Authorization header is missing!") {
+          console.error('No token found. Redirecting to login...');
+          setToast({ show: true, type: 'error', message: 'No token found. Please log in again.' });
+          delayLogout(); // Call the delayLogout function
+        }
+        else if (data.error === "Invalid token!") {
+          console.error('Invalid token found. Redirecting to login...');
+          setToast({ show: true, type: 'error', message: 'Invalid token. Please log in again.' });
+          delayLogout(); // Call the delayLogout function
+        } 
+        else {
+          // Handle other errors
+          setToast({ show: true, type: 'error', message: 'Failed to fetch cafes. Please try again.' });
+          console.error('Failed to fetch cafes:', data.error);
+        }
+      }
+      } catch (error) {
+        // Handle network errors or other unexpected errors
+        setToast({ show: true, type: 'error', message: 'An error occurred while fetching cafes.' });
+        console.error('Error fetching cafes:', error);
+    }
+  };
 
 
     useEffect(() => {
@@ -84,8 +115,8 @@ function CustomerHome() {
 
   return (
     <>
-    <div className="p-4 bg-gray-50 min-h-screen dark:bg-gray-900">
-        <main className="grow">
+    <div className="p-6 bg-gray-50 min-h-screen dark:bg-gray-900">
+      <main className="grow">
         <div className="mb-4 sm:mb-0">
           <h1 className="mb-6 text-sm md:text-xl text-primary-light dark:text-primary-dark font-bold">HomePage</h1>
         </div>
@@ -136,6 +167,13 @@ function CustomerHome() {
       </div>
       </main>
     </div>
+    {toast.show && (
+    <Toast
+      type={toast.type}
+      message={toast.message}
+      onClose={() => setToast({ ...toast, show: false })}
+    />
+  )}
 </>
   );
 }

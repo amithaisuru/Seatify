@@ -52,6 +52,7 @@ function Login() {
     if (response.ok) {
       // alert(data.message)
       setToast({ show: true, type: 'success', message: 'Login successful!' });
+      
       console.log(response.message)
       login(data.access_token);
       const decoded = jwt_decode(data.access_token);
@@ -66,7 +67,7 @@ function Login() {
         } else {
           navigate('/details');
         }
-      }, 3000); // Small delay so toast shows before redirect
+      }, 1000); // Small delay so toast shows before redirect
     } else {
       setToast({ show: true, type: 'error', message: 'Login failed!' });
       console.log('Login failed:', data.message);}
