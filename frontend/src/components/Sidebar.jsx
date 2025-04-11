@@ -41,9 +41,6 @@ function Sidebar({ isOpen, setIsOpen }) {
           md:static md:translate-x-0 md:flex md:flex-col`}
       >
         <div className="flex items-center justify-between h-16 border-b border-gray-300 dark:border-primary-darker px-4">
-          {/* <h3 className="font-sans text-sm font-semibold text-gray-800 dark:text-white tracking-wide">
-            Seatify
-          </h3> */}
           <h3 className="text-center text-2xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter font-sans">
             Seatify
         </h3>
@@ -88,6 +85,30 @@ function Sidebar({ isOpen, setIsOpen }) {
                   Details
                 </Link>
               </li>
+            )}
+            {user.user_type === 0 && (
+              <ul>
+                <li>
+                <Link 
+                  to="/homepage"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                >
+                  homepage
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/register"
+                  onClick={() => setIsOpen(false)}  // close menu after click
+                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                >
+                  Add Users
+                </Link>
+              </li>
+              
+              </ul>
+              
             )}
           </ul>
 
