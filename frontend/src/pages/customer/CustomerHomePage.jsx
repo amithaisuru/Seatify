@@ -100,7 +100,6 @@ function CustomerHome() {
     }
   };
 
-
     useEffect(() => {
         fetchCafes();
     }, []);
@@ -120,7 +119,7 @@ function CustomerHome() {
         <div className="mb-4 sm:mb-0">
           <h1 className="mb-6 text-sm md:text-xl text-primary-light dark:text-primary-dark font-bold">HomePage</h1>
         </div>
-        <div className='bg-gray-200 dark:bg-gray-800  rounded-md p-4'>
+        <div className='bg-gray-200 dark:bg-gray-800 rounded-md p-4'>
         {/* Search and Filter */}
         <div className="flex text-sm flex-col md:flex-row items-center gap-4 mb-6">
             <input

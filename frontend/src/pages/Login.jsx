@@ -64,8 +64,11 @@ function Login() {
       setTimeout(() => {
         if (userType === 1) {
           navigate('/profile');
-        } else {
+        } else if (userType === 2) {
           navigate('/details');
+        }
+        else{
+          navigate('/homepage')
         }
       }, 1000); // Small delay so toast shows before redirect
     } else {
@@ -79,19 +82,108 @@ function Login() {
   };
 
   return (
-    <>    
-    <div className="relative flex flex-col flex-1 overflow-y-hidden bg-primary-lighter dark:bg-primary-darker justify-center overflow-x-hidden font-poppins">
-      <div className={` flex w-screen min-h-screen flex-1 flex-col px-6 py-12 lg:px-8`}>
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-3xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter font-sans">
-              Sign in to your account
+    // <>    
+    // <div className="relative flex flex-col flex-1 overflow-y-hidden bg-primary-lighter dark:bg-primary-darker justify-center overflow-x-hidden font-poppins">
+    //   <div className={` flex w-screen min-h-screen flex-1 flex-col px-6 py-12 lg:px-8`}>
+    //     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    //       <h2 className="mt-10 text-center text-3xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter font-sans">
+    //           Sign in to your account
+    //       </h2>
+    //       <DarkModeToggle/>
+    //     </div>
+    //     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    //       <form className="space-y-6" action="#" method="POST">
+    //         <div>
+    //           <label htmlFor="email" className="block text-md font-medium leading-6  text-gray-600 dark:text-gray-400">
+    //             Email
+    //           </label>
+    //           <div className="mt-2">
+    //             <input
+    //               id="email"
+    //               name="email"
+    //               type="email"
+    //               autoComplete="email"
+    //               required
+    //               value={email}
+    //               onChange={e => setEmail(e.target.value)}
+    //               className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
+    //             />
+    //           </div>
+    //           {messages.email && <p className="text-red-500 text-sm mt-2">{messages.email}</p>}
+
+    //         </div>
+    //         <div>
+    //           <div className="flex items-center justify-between">
+    //             <label htmlFor="password" className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400 ">
+    //               Password
+    //             </label>
+    //           </div>
+    //           <div className="mt-2">
+    //             <input
+    //               id="password"
+    //               name="password"
+    //               type="password"
+    //               autoComplete="current-password"
+    //               required
+    //               value={password}
+    //               onChange={e => setPassword(e.target.value)} 
+    //               className="block w-full rounded-md border-0 px-1.5 py-1.5  text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6  dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
+    //             />
+            
+    //           </div>
+    //           {messages.password && <p className="text-red-500 text-sm mt-2">{messages.password}</p>}
+    //         </div>
+    //         <div>
+    //           <button
+    //             type="submit"
+    //             className="h-10 w-full flex items-center justify-center px-4 py-2 text-sm rounded-md custom-button bg-primary-dark dark:bg-primary-dark  text-white hover:bg-primary-light dark:hover:bg-primary-light transition-colors duration-300"
+    //             onClick={handleLogin}
+    //           >
+    //             Sign in
+    //           </button>
+    //           <div className='font-medium text-sm text-gray-600 dark:text-gray-400 text-center mt-2 flex justify-between'>
+    //         <p> Don't have an account?</p><a href="/signup" className='underline'>Signup</a>
+    //           </div>
+    //         </div>
+    //       </form>
+    //     </div>
+    //   </div>
+      
+    // </div>
+    // {toast.show && (
+    //   <Toast
+    //     type={toast.type}
+    //     message={toast.message}
+    //     onClose={() => setToast({ ...toast, show: false })}
+    //   />
+    // )}
+    // </>
+  
+    <>
+    <div className="flex flex-col md:flex-row min-h-screen bg-primary-lighter dark:bg-primary-darker overflow-hidden font-poppins">
+      
+      {/* Left Side - Introduction */}
+      <div className="flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-900 p-10 text-center">
+        <h1 className="text-5xl font-bold mb-6 text-primary-dark dark:text-primary-lighter">
+          Welcome to Seatify
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md">
+          Find, Book, and Relax at your favorite cafes and lounges.  
+          <br /> Seamless seat reservation made simple.
+        </p>
+      </div>
+
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-10">
+        <div className="w-full max-w-sm space-y-6">
+          <h2 className="text-center text-3xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter">
+            Sign in to your account
           </h2>
-          <DarkModeToggle/>
-        </div>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" action="#" method="POST">
+
+          <form className="space-y-6" onSubmit={handleLogin}>
+            {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-md font-medium leading-6  text-gray-600 dark:text-gray-400">
+              <label htmlFor="email" className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400">
                 Email
               </label>
               <div className="mt-2">
@@ -103,18 +195,17 @@ function Login() {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
+                  className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
                 />
               </div>
               {messages.email && <p className="text-red-500 text-sm mt-2">{messages.email}</p>}
-
             </div>
+
+            {/* Password Field */}
             <div>
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400 ">
-                  Password
-                </label>
-              </div>
+              <label htmlFor="password" className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400">
+                Password
+              </label>
               <div className="mt-2">
                 <input
                   id="password"
@@ -123,30 +214,35 @@ function Login() {
                   autoComplete="current-password"
                   required
                   value={password}
-                  onChange={e => setPassword(e.target.value)} 
-                  className="block w-full rounded-md border-0 px-1.5 py-1.5  text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6  dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
+                  onChange={e => setPassword(e.target.value)}
+                  className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-dark sm:text-sm sm:leading-6 bg-gray-50 dark:bg-gray-800"
                 />
-            
               </div>
               {messages.password && <p className="text-red-500 text-sm mt-2">{messages.password}</p>}
             </div>
+
+            {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="h-10 w-full flex items-center justify-center px-4 py-2 text-sm rounded-md custom-button bg-primary-dark dark:bg-primary-dark  text-white hover:bg-primary-light dark:hover:bg-primary-light transition-colors duration-300"
-                onClick={handleLogin}
+                className="h-10 w-full flex items-center justify-center px-4 py-2 text-sm rounded-md custom-button bg-primary-dark dark:bg-primary-dark text-white hover:bg-primary-light dark:hover:bg-primary-light transition-colors duration-300"
               >
                 Sign in
               </button>
-              <div className='font-medium text-sm text-gray-600 dark:text-gray-400 text-center mt-2 flex justify-between'>
-            <p> Don't have an account?</p><a href="/signup" className='underline'>Signup</a>
-              </div>
+            </div>
+
+            {/* Link to Signup */}
+            <div className="text-center text-gray-600 dark:text-gray-400 text-sm mt-2">
+              <p>
+                Don't have an account? <a href="/signup" className="underline">Signup</a>
+              </p>
             </div>
           </form>
         </div>
       </div>
-      
     </div>
+
+    {/* Toast Message */}
     {toast.show && (
       <Toast
         type={toast.type}
@@ -154,7 +250,7 @@ function Login() {
         onClose={() => setToast({ ...toast, show: false })}
       />
     )}
-    </>
+  </>
   );
 }
 
