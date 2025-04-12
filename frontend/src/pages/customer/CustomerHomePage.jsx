@@ -71,6 +71,9 @@ function CustomerHome() {
 
       if (response.ok) {
           setCafes(data.cafes);
+          console.log('Cafes:', data.cafes);
+          setToast({ show: true, type: 'success', message: 'Cafes fetched successfully!' });
+          
       } else {
         if (data.error === "Token has expired!") {
           console.error('Token expired. Redirecting to login...');
