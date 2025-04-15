@@ -11,6 +11,7 @@ import DarkModeToggle from './components/DarkModeToggle';
 import CustomerHome from './pages/customer/CustomerHomePage';
 import CafeDetails from './pages/customer/CafeDetails';
 import AdminUserProfiles from './pages/Admin/UserProfiles';
+import AddUsers from './pages/Admin/AddUsers';
 
 function App() {
   const location = useLocation();
@@ -60,9 +61,14 @@ function App() {
               <CafeDetails/>
             </ProtectedRoute>
           } /> 
-          <Route path="/register" element={
+          <Route path="/userProfiles" element={
             <ProtectedRoute>
               <AdminUserProfiles/>
+            </ProtectedRoute>
+          } /> 
+          <Route path="/addUsers" element={
+            <ProtectedRoute>
+              <AddUsers/>
             </ProtectedRoute>
           } /> 
         </Routes>
