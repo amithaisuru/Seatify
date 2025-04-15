@@ -20,6 +20,16 @@ function AddUsers() {
     // store fetched locations
     const [locations, setLocations] = useState([]);
 
+    const handleClear = () =>{
+        setEmail('');
+            setPassword('');
+            setUserType(1);
+            setCafeName('');
+            setLocation('');
+            setContactNumber('');
+            setMessages({}); // Clear previous messages
+    };
+
     const delayLogout = () => {
         setTimeout(() => {
         logout();
@@ -90,6 +100,8 @@ function AddUsers() {
         if (response.ok) {
             console.log('User added successful:', data);
             setToast({ show: true, type: 'success', message: 'Registration successful!' });
+            handleClear();
+            
         
         } 
         else {
