@@ -86,7 +86,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                 </Link>
               </li>
             )}
-            {user.user_type === 0 && (
+            {user.user_type === 3 && (
               <ul>
                 <li>
                 <Link 
@@ -99,7 +99,16 @@ function Sidebar({ isOpen, setIsOpen }) {
               </li>
               <li>
                 <Link 
-                  to="/register"
+                  to="/userProfiles"
+                  onClick={() => setIsOpen(false)}  // close menu after click
+                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                >
+                  User Profiles
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/addUsers"
                   onClick={() => setIsOpen(false)}  // close menu after click
                   className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
