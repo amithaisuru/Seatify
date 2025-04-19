@@ -12,6 +12,7 @@ class Cafe(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     location_id = db.Column(db.Integer, db.ForeignKey('locations.id'), nullable=True)
+    image_url = db.Column(db.String(500))  # ✅ New field to store image path
 
 
     # Relationships
