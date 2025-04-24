@@ -10,6 +10,9 @@ const { id } = useParams();  // Get cafe id from URL
 const { token } = useContext(AuthContext);
 const [cafe, setCafe] = useState(null);
 
+const [tables, setTables] = useState([])
+const [chairs, setChairs] = useState([]) //seats
+
 const [toast, setToast] = useState({ show: false, type: '', message: '' });//toast messages
 const { logout } = useContext(AuthContext);
 const delayLogout = () => {
@@ -18,36 +21,6 @@ const delayLogout = () => {
     }, 2000);
 };
 
-const seats = [
-    { x: 20, y: 30, label: 'A1', status: 'available' },
-    { x: 80, y: 30, label: 'A2', status: 'occupied' },
-    { x: 50, y: 40, label: 'T1', status: 'occupied' },
-    { x: 140, y: 30, label: 'A3', status: 'available' },
-    { x: 20, y: 80, label: 'B1', status: 'available' },
-    { x: 80, y: 80, label: 'B2', status: 'occupied' },
-  ];
-
-  const tables = [
-    { x: 100, y: 80, label: 'T1' },
-    { x: 300, y: 80, label: 'T2' },
-  ];
-  
-  const chairs = [
-    { x: 80, y: 60, label: 'C1', status: 'available' },
-    { x: 150, y: 60, label: 'C2', status: 'occupied' },
-    { x: 80, y: 120, label: 'C3', status: 'available' },
-    { x: 170, y: 90, label: 'C13', status: 'available' },
-    { x: 160, y: 130, label: 'C4', status: 'available' },
-    { x: 130, y: 150, label: 'C5', status: 'occupied' },
-
-    { x: 280, y: 60, label: 'C10', status: 'available' },
-    { x: 320, y: 60, label: 'C6', status: 'occupied' },
-    { x: 360, y: 80, label: 'C11', status: 'occupied' },
-    { x: 370, y: 110, label: 'C9', status: 'occupied' },
-    { x: 280, y: 120, label: 'C7', status: 'available' },
-    { x: 350, y: 140, label: 'C8', status: 'available' },
-    { x: 310, y: 140, label: 'C12', status: 'available' },
-  ];
 const fetchCafeDetails = async () => {
     // setCafe({
     //     cafe_name: "Cafe Example",
@@ -73,7 +46,7 @@ const fetchCafeDetails = async () => {
 //     console.error('Error fetching cafe details:', error);
 // }
 try {
-    const response = await fetch(`http://localhost:5000/cafes/${id}`,{
+    const response = await fetch(`http://localhost:5000/cafes/${id}/info`,{
         method: 'GET',
         headers: { 
         'Content-Type': 'application/json' ,
@@ -113,8 +86,54 @@ try {
 
 };
 
+// fetch cafe layout details
+const fetchCafeLayoutDetails = async () => {
+    try {
+        const response = await fetch(`http://localhost:5000/cafes/${id}/layout`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+
+        if (response.ok) {
+            const data = await response.json();
+            setTables(data.tables);
+            setChairs(data.chairs);
+
+        } else {
+            if (data.error === "Token has expired!") {
+                console.error('Token expired. Redirecting to login...');
+                setToast({ show: true, type: 'error', message: 'Token expired. Please log in again.' });
+                delayLogout(); // Call the delayLogout function             
+            } 
+            else if (data.error === "Authorization header is missing!") {
+            console.error('No token found. Redirecting to login...');
+            setToast({ show: true, type: 'error', message: 'No token found. Please log in again.' });
+            delayLogout(); // Call the delayLogout function
+            }
+            else if (data.error === "Invalid token!") {
+                console.error('Invalid token found. Redirecting to login...');
+                setToast({ show: true, type: 'error', message: 'Invalid token. Please log in again.' });
+                delayLogout(); // Call the delayLogout function
+            } 
+            else {
+            // Handle other errors
+            setToast({ show: true, type: 'error', message: 'Failed to fetch layout details. Please try again.' });
+            console.error('Failed to fetch layout details:', data.error);
+            }        }
+    } catch (error) {
+        console.error('Error fetching cafe layout details:', error);
+        setToast({ show: true, type: 'error', message: 'An error occurred while fetching layout details.' });
+        
+    }
+}
+
 useEffect(() => {
 fetchCafeDetails();
+fetchCafeLayoutDetails();
 }, [id]);
 
 if (!cafe) {
