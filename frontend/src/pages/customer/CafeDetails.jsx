@@ -2,6 +2,8 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import Toast from '../../components/Toast'; // Import your Toast component
+// import SeatMap from '../../components/SeatMap';
+import CafeLayout from '../../components/CafeLayout';
 
 function CafeDetails() {
 const { id } = useParams();  // Get cafe id from URL
@@ -16,6 +18,36 @@ const delayLogout = () => {
     }, 2000);
 };
 
+const seats = [
+    { x: 20, y: 30, label: 'A1', status: 'available' },
+    { x: 80, y: 30, label: 'A2', status: 'occupied' },
+    { x: 50, y: 40, label: 'T1', status: 'occupied' },
+    { x: 140, y: 30, label: 'A3', status: 'available' },
+    { x: 20, y: 80, label: 'B1', status: 'available' },
+    { x: 80, y: 80, label: 'B2', status: 'occupied' },
+  ];
+
+  const tables = [
+    { x: 100, y: 80, label: 'T1' },
+    { x: 300, y: 80, label: 'T2' },
+  ];
+  
+  const chairs = [
+    { x: 80, y: 60, label: 'C1', status: 'available' },
+    { x: 150, y: 60, label: 'C2', status: 'occupied' },
+    { x: 80, y: 120, label: 'C3', status: 'available' },
+    { x: 170, y: 90, label: 'C13', status: 'available' },
+    { x: 160, y: 130, label: 'C4', status: 'available' },
+    { x: 130, y: 150, label: 'C5', status: 'occupied' },
+
+    { x: 280, y: 60, label: 'C10', status: 'available' },
+    { x: 320, y: 60, label: 'C6', status: 'occupied' },
+    { x: 360, y: 80, label: 'C11', status: 'occupied' },
+    { x: 370, y: 110, label: 'C9', status: 'occupied' },
+    { x: 280, y: 120, label: 'C7', status: 'available' },
+    { x: 350, y: 140, label: 'C8', status: 'available' },
+    { x: 310, y: 140, label: 'C12', status: 'available' },
+  ];
 const fetchCafeDetails = async () => {
     // setCafe({
     //     cafe_name: "Cafe Example",
@@ -110,8 +142,20 @@ return (
         {/* </div> */}
     </div> 
     </div>
+    <div className="mt-6">
+        <h2 className="text-lg font-bold text-primary-dark mb-4">Seat Map</h2>
+        {/* <div className="flex justify-center">
+            <SeatMap seats={seats} />
+        </div> */}
+    </div>
+    <div className="w-full max-w-[100%] overflow-auto">
+    <CafeLayout tables={tables} chairs={chairs} />
+
+    </div>
 </main>
 </div>
+
+
 {toast.show && (
     <Toast
         type={toast.type}
