@@ -6,6 +6,7 @@ function DarkModeToggle() {
       window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // Function to toggle dark mode
   const toggleDarkMode = () => {
     if (isDarkMode) {
       document.documentElement.classList.remove('dark');
