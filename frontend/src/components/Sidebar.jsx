@@ -53,13 +53,14 @@ function Sidebar({ isOpen, setIsOpen }) {
         {/* Navigation */}
         <div className="flex flex-col flex-1 justify-between px-4 py-6 overflow-y-auto">
           <ul className="space-y-4">
+            {/* customer */}
             {user.user_type === 1 && (
               <ul>
               <li>
                 <Link 
                   to="/profile"
                   onClick={() => setIsOpen(false)}  // close menu after click
-                  className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker text-gray-100 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
                   Profile
                 </Link>
@@ -68,13 +69,14 @@ function Sidebar({ isOpen, setIsOpen }) {
                 <Link 
                   to="/homepage"
                   onClick={() => setIsOpen(false)}  // close menu after click
-                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-100 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
                   HomePage
                 </Link>
               </li>
               </ul>
             )}
+            {/* cafe */}
             {user.user_type === 2 && (
               <li>
                 <Link 
@@ -86,6 +88,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                 </Link>
               </li>
             )}
+            {/*admin*/}
             {user.user_type === 3 && (
               <ul>
                 <li>

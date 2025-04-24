@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import Toast from '../../components/Toast'; // Import your Toast component
-import SeatMap from '../../components/SeatMap';
+// import SeatMap from '../../components/SeatMap';
 import CafeLayout from '../../components/CafeLayout';
 
 function CafeDetails() {
@@ -40,7 +40,6 @@ const seats = [
     { x: 160, y: 130, label: 'C4', status: 'available' },
     { x: 130, y: 150, label: 'C5', status: 'occupied' },
 
-  
     { x: 280, y: 60, label: 'C10', status: 'available' },
     { x: 320, y: 60, label: 'C6', status: 'occupied' },
     { x: 360, y: 80, label: 'C11', status: 'occupied' },
@@ -48,13 +47,7 @@ const seats = [
     { x: 280, y: 120, label: 'C7', status: 'available' },
     { x: 350, y: 140, label: 'C8', status: 'available' },
     { x: 310, y: 140, label: 'C12', status: 'available' },
-    
-    
-
   ];
-  
-
-
 const fetchCafeDetails = async () => {
     // setCafe({
     //     cafe_name: "Cafe Example",
@@ -155,7 +148,7 @@ return (
             <SeatMap seats={seats} />
         </div> */}
     </div>
-    <div>
+    <div className="w-full max-w-[100%] overflow-auto">
     <CafeLayout tables={tables} chairs={chairs} />
 
     </div>
