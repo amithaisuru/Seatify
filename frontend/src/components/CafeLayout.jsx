@@ -1,8 +1,12 @@
 import React from 'react';
 
-const CafeLayout = ({ tables = [], chairs = [] }) => {
+const CafeLayout = ({ tables = [], chairs = [],width = 100, height = 60  }) => {
   return (
-    <div className="relative w-[600px] h-[400px] border bg-gray-100 rounded-md overflow-hidden dark:bg-gray-800">
+    <div className="relative border bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800"
+    // style={{ width: `${width}px`, height: `${height}px` }}
+    style={{ width:`${width}%` , height: `${height}vh` }}
+    
+    >
       
       {/* Render tables */}
       {tables.map((table, index) => (
