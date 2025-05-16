@@ -1,65 +1,6 @@
-class CafeObjects:
-    def __init__(self, topLeft, bottomRight):
-        self.topLeft = topLeft  # Top-left corner of the bounding box
-        self.bottomRight = bottomRight  # Bottom-right corner of the bounding box
-        self.center = (0, 0)  # Center of the object
-    
-    #calculate the center of the object
-    def calculate_center(self):
-        x_center = (self.topLeft[0] + self.bottomRight[0]) / 2
-        y_center = (self.topLeft[1] + self.bottomRight[1]) / 2
-        self.center = (x_center, y_center)
-        return (x_center, y_center)
-
-class Person(CafeObjects):
-    def __init__(self, id, topLeft, bottomRight):
-        super().__init__(topLeft, bottomRight)
-        self.calculate_center()
-        self.id = id
-        self.seated = False
-    
-    def sit_down(self):
-        self.seated = True
-        print(f"{self.id} is now seated.")
-    
-    def stand_up(self):
-        self.seated = False
-        print(f"{self.id} has stood up.")
-
-class Chair(CafeObjects):
-    def __init__(self, id, topLeft, bottomRight, occupied=False):
-        super().__init__(topLeft, bottomRight)
-        self.id = id
-        self.occupied = occupied
-        self.occupant = None
-        self.calculate_center()
-
-    def assign_occupant(self, person):
-        if not self.occupied and person:
-            self.occupied = True
-            self.occupant = person
-            person.sit_down()
-            return True
-        return False
-
-    def remove_occupant(self):
-        if self.occupied and self.occupant:
-            person = self.occupant
-            self.occupied = False
-            self.occupant = None
-            person.stand_up()
-            return person
-        return None
-
-    def __str__(self):
-        status = f"occupied by {self.occupant.id}" if self.occupied else "empty"
-        return f"Chair {self.id}: {status} at position {self.center}"
-
-class Table(CafeObjects):
-    def __init__(self, id, topLeft, bottomRight):
-        super().__init__(topLeft, bottomRight)
-        self.id = id
-        self.calculate_center()
+from chair import Chair
+from person import Person
+from table import Table
 
 #test classes
 if __name__ == "__main__":
