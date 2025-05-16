@@ -2,41 +2,40 @@ import tkinter as tk
 import json
 from table import Table
 from chair import Chair
+from person import Person
 from cafeLayout import CafeLayout
 
-class DummyCafePopulator:
-    def __init__(self):
+class CafeLayoutTester:
+    def __init__(self, tables, chairs, people):
         self.cafe_layout = CafeLayout()
+        self.populate_layout(tables, chairs, people)
 
-    def populate_dummy_data(self):
+    def populate_layout(self, tables, chairs, people):
         """
-        Populates the cafe layout with dummy tables and chairs.
+        Populates the cafe layout with provided lists of tables, chairs, and people.
         """
         # Add tables
-        tables = [
-            Table("Table1", (50, 50), (150, 150)),
-            Table("Table2", (200, 200), (300, 300)),
-            Table("Table3", (350, 50), (450, 150))
-        ]
         for table in tables:
-            self.cafe_layout.add_table(table)
+            if isinstance(table, Table):
+                self.cafe_layout.add_table(table)
 
         # Add chairs
-        chairs = [
-            Chair("Chair1", (40, 40), (60, 60), occupied=True),  # Near Table1, occupied
-            Chair("Chair2", (160, 160), (180, 180), occupied=False),  # Near Table1, empty
-            Chair("Chair3", (190, 190), (210, 210), occupied=True),  # Near Table2, occupied
-            Chair("Chair4", (310, 310), (330, 330), occupied=False),  # Near Table2, empty
-            Chair("Chair5", (340, 40), (360, 60), occupied=False),  # Near Table3, empty
-            Chair("Chair6", (460, 160), (480, 180), occupied=True)   # Near Table3, occupied
-        ]
         for chair in chairs:
-            self.cafe_layout.add_chair(chair)
+            if isinstance(chair, Chair):
+                self.cafe_layout.add_chair(chair)
+
+        # Add people
+        for person in people:
+            if isinstance(person, Person):
+                self.cafe_layout.add_person(person)
 
     def display_layout(self):
         """
-        Prints the layout as JSON and displays it graphically using tkinter.
+        Runs occupancy detection, prints the layout as JSON, and displays it graphically using tkinter.
         """
+        # Run occupancy detection
+        self.cafe_layout.detect_occupancy(IOU_THRESHOLD=0.2)
+
         # Get and print the layout as JSON
         layout = self.cafe_layout.get_layout()
         print("Cafe Layout:")
@@ -63,10 +62,38 @@ class DummyCafePopulator:
             canvas.create_rectangle(x1, y1, x2, y2, fill=fill_color, outline="black")
             canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=chair["id"], fill="black")
 
+        # Draw people
+        for person in self.cafe_layout.people:
+            x1, y1 = person.topLeft
+            x2, y2 = person.bottomRight
+            canvas.create_rectangle(x1, y1, x2, y2, fill="yellow", outline="black")
+            canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=person.id, fill="black")
+
         # Start the tkinter event loop
         root.mainloop()
 
 if __name__ == "__main__":
-    populator = DummyCafePopulator()
-    populator.populate_dummy_data()
-    populator.display_layout()
+    # Example usage with dummy data
+    tables = [
+        # Table("Table1", (50, 50), (150, 150)),
+        # Table("Table2", (200, 200), (300, 300)),
+        # Table("Table3", (350, 50), (450, 150))
+    ]
+    chairs = [
+        Chair("Chair1", (40, 40), (60, 60)),  # Near Table1
+        Chair("Chair2", (160, 160), (180, 180)),  # Near Table1
+        Chair("Chair3", (190, 190), (210, 210)),  # Near Table2
+        Chair("Chair4", (310, 310), (330, 330)),  # Near Table2
+        Chair("Chair5", (340, 40), (360, 60)),  # Near Table3
+        Chair("Chair6", (460, 160), (480, 180))   # Near Table3
+    ]
+    people = [
+        Person("Person1", (45, 45), (55, 55)),  # Overlaps with Chair1
+        Person("Person2", (195, 195), (205, 205)),  # Overlaps with Chair3
+        Person("Person3", (100, 100), (120, 120)),  # No overlap with any chair
+        Person("Person4", (465, 165), (475, 175))   # Overlaps with Chair6
+    ]
+
+    # Create and display the layout
+    tester = CafeLayoutTester(tables, chairs, people)
+    tester.display_layout()
