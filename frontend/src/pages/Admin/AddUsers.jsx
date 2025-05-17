@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { useContext } from 'react';
 import Toast from '../../components/Toast'; 
+import { BASE_URL } from '../../constants/config';
 
 function AddUsers() {
     const { token } = useContext(AuthContext);
@@ -86,7 +87,7 @@ function AddUsers() {
         setMessages({}); // Clear previous messages
 
         try {
-        const response = await fetch('http://localhost:5000/admin/addUsers', {
+        const response = await fetch(`${BASE_URL}/admin/addUsers`, {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json' ,
@@ -134,7 +135,7 @@ function AddUsers() {
     };
     const fetchLocations = async (e) =>{
         try {
-        const response = await fetch('http://localhost:5000/admin/locations', {
+        const response = await fetch(`${BASE_URL}/admin/locations`, {
             method: 'GET',
             headers: { 
             'Content-Type': 'application/json',
