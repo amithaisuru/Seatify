@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import jwt_decode from 'jwt-decode';
 import DarkModeToggle from '../components/DarkModeToggle';
 import Toast from '../components/Toast'; // Import your Toast component
+import { BASE_URL } from '../constants/config';
 
 function Login() {
   const { login } = useContext(AuthContext);
@@ -41,7 +42,7 @@ function Login() {
 
     setMessages({}); // Clear previous messages
 
-    try{const response = await fetch('http://localhost:5000/login', {
+    try{const response = await fetch(`${BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -63,7 +64,7 @@ function Login() {
 
       setTimeout(() => {
         if (userType === 1) {
-          navigate('/profile');
+          navigate('/homepage');
         } else if (userType === 2) {
           navigate('/details');
         }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useContext } from 'react';
 import Toast from '../../components/Toast'; // Import your Toast component
+import { BASE_URL } from '../../constants/config';
 
 function CustomerHome() {
   const { token } = useContext(AuthContext);
@@ -61,7 +62,7 @@ function CustomerHome() {
 
   const fetchCafes = async () => {
     try {
-      const response = await fetch('http://localhost:5000/cafes',{
+      const response = await fetch(`${BASE_URL}/cafes`,{
           method: 'GET',
           headers: { 
           'Content-Type': 'application/json' ,
