@@ -68,7 +68,7 @@ def get_seats_by_cafe_id(cafe_id):
         if not cafe:
             return jsonify({"error": "Cafe not found"}), 404
 
-         # Hardcoded layout
+        # Hardcoded values for layout display
         tables = [
             { "x": 100, "y": 80, "label": "T1" },
             { "x": 300, "y": 80, "label": "T2" }
@@ -87,7 +87,9 @@ def get_seats_by_cafe_id(cafe_id):
             { "x": 370, "y": 110, "label": "C9", "status": "occupied" },
             { "x": 280, "y": 120, "label": "C7", "status": "available" },
             { "x": 350, "y": 140, "label": "C8", "status": "available" },
-            { "x": 310, "y": 140, "label": "C12", "status": "available" }
+            { "x": 310, "y": 140, "label": "C12", "status": "available" },
+            
+
         ]
 
         # For demonstration, let's assume all seats are available
