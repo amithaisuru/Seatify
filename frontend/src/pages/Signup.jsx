@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DarkModeToggle from '../components/DarkModeToggle';
 import Toast from '../components/Toast';
+import { BASE_URL } from '../constants/config';
 
 function Signup() {
   const [email, setEmail] = useState('');
@@ -73,7 +74,7 @@ function Signup() {
 
     try 
     {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch(`${BASE_URL}/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bodyData),
@@ -105,7 +106,7 @@ function Signup() {
 
   const fetchLocations = async (e) =>{
     try {
-      const response = await fetch('http://localhost:5000/locations', {
+      const response = await fetch(`${BASE_URL}locations`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });

@@ -19,7 +19,7 @@ function Table1({ cafes = []  , tableTopic ,fetchUsers}) {
     // delete function
     const handleDelete = async (email) => {
         try {
-            const response = await fetch('http://localhost:5000/admin/deleteUser', {
+            const response = await fetch(`${BASE_URL}/admin/deleteUser`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json' ,

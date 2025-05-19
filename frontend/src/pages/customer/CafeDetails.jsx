@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import Toast from '../../components/Toast'; // Import your Toast component
 // import SeatMap from '../../components/SeatMap';
 import CafeLayout from '../../components/CafeLayout';
+import { BASE_URL } from '../../constants/config';
 
 function CafeDetails() {
 const { id } = useParams();  // Get cafe id from URL
@@ -46,7 +47,7 @@ const fetchCafeDetails = async () => {
 //     console.error('Error fetching cafe details:', error);
 // }
 try {
-    const response = await fetch(`http://localhost:5000/cafes/${id}/info`,{
+    const response = await fetch(`${BASE_URL}/cafes/${id}/info`,{
         method: 'GET',
         headers: { 
         'Content-Type': 'application/json' ,
@@ -89,7 +90,7 @@ try {
 // fetch cafe layout details
 const fetchCafeLayoutDetails = async () => {
     try {
-        const response = await fetch(`http://localhost:5000/cafes/${id}/layout`, {
+        const response = await fetch(`${BASE_URL}/cafes/${id}/layout`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
