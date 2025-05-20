@@ -3,8 +3,8 @@ import Login from './pages/Login';
 import { Menu } from 'lucide-react'; // Importing the Menu icon
 import { useState } from 'react';
 import Signup from './pages/Signup';
-import Profile from './pages/cafe/Profile';
-import Details from './pages/customer/Details';
+import Profile from './pages/customer/Profile';
+import Details from './pages/cafe/Details';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoutes';
 import DarkModeToggle from './components/DarkModeToggle';

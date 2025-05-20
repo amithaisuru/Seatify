@@ -64,11 +64,14 @@ function Login() {
 
       setTimeout(() => {
         if (userType === 1) {
+          // Customer
           navigate('/homepage');
         } else if (userType === 2) {
+          // Cafe Owner
           navigate('/details');
         }
         else{
+          // Admin
           navigate('/homepage')
         }
       }, 1000); // Small delay so toast shows before redirect
