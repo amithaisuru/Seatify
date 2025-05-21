@@ -106,7 +106,7 @@ function Signup() {
 
   const fetchLocations = async (e) =>{
     try {
-      const response = await fetch(`${BASE_URL}locations`, {
+      const response = await fetch(`${BASE_URL}/locations`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -131,7 +131,7 @@ function Signup() {
     <div className={` flex w-screen min-h-screen flex-1 flex-col px-6 py-12 lg:px-8`}>
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-3xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter font-sans">
-            Sign in to your account
+            Sign Up to your account
         </h2>
         <DarkModeToggle/>
       </div>

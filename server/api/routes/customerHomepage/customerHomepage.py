@@ -15,7 +15,7 @@ def get_cafes():
             {
                 "id": cafe.id,
                 "cafe_name": cafe.cafe_name,
-                "seats_available": 10,  # You can later make this dynamic
+                "seats_available": 10 if cafe.cafe_name == 'Hot Wok' else 0,
                 "location": {
                     "id": cafe.location.id if cafe.location else None,
                     "name": cafe.location.location if cafe.location else "Unknown"
