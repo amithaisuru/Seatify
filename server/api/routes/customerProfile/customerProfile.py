@@ -32,3 +32,23 @@ def get_customer_profile_data():
 
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
+
+@customerProfile_bp.route('/updateProfile', methods=['POST'])
+@jwt_required()
+def update_customer_profile():
+    try:
+        identity = get_jwt_identity()
+        user = User.query.get(identity)
+
+        data = request.get_json()
+        user.email = data.get("email", user.email)
+
+        db.session.commit()
+        return jsonify({"message": "Customer Profile updated"}), 200
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": "DB error", "message": str(e)}), 500
+    except Exception as e:
+            return jsonify({"error": "Unexpected error", "message": str(e)}), 500
+
