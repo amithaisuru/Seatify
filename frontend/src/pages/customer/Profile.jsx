@@ -125,7 +125,7 @@ const handleSave = async () => {
         <div className="w-full max-w-sm space-y-6 p-4">
           <form className="space-y-6">
             {/* Email */}
-            <div className='flex items-center gap-4 mb-4'>
+            <div className='flex items-center mb-4'>
               <label htmlFor="email" className="block text-md font-medium text-gray-600 dark:text-gray-400 w-full">
                 Email
               </label>
@@ -143,7 +143,7 @@ const handleSave = async () => {
             </div>
 
             {/* ID */}
-            <div className='flex items-center gap-4 mb-4'>
+            <div className='flex items-center mb-4'>
               <label htmlFor="id" className="block text-md font-medium text-gray-600 dark:text-gray-400 w-full">
                 User ID
               </label>
@@ -159,7 +159,7 @@ const handleSave = async () => {
             </div>
 
             {/* User Type */}
-            <div className='flex items-center gap-4 mb-4'>
+            <div className='flex items-center mb-4'>
               <label htmlFor="user_type" className="block text-md font-medium text-gray-600 dark:text-gray-400 w-full">
                 User Type
               </label>
