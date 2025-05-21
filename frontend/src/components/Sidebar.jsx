@@ -97,7 +97,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   onClick={() => setIsOpen(false)}
                   className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
-                  homepage
+                  Homepage
                 </Link>
               </li>
               <li>

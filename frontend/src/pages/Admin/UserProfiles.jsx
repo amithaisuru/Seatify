@@ -237,12 +237,12 @@ function AdminUserProfiles() {
         </div>
         <div>
           <div className="p-2">
-              <Table1 cafes={adminUsers} tableTopic={'Admin'}/>
+              <Table1 cafes={adminUsers} tableTopic={'Admin'} fetchUsers={fetchUsers}/>
           </div>
         </div>
         <div>
           <div className="p-2">
-              <Table1 cafes={customerUsers} tableTopic={'Customers'}/>
+              <Table1 cafes={customerUsers} tableTopic={'Customers'} fetchUsers={fetchUsers}/>
           </div>
         </div>
         <div>
