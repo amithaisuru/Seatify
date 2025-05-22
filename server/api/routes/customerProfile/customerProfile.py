@@ -22,7 +22,7 @@ def get_customer_profile_data():
             "id": user.id,
             "email": user.email,
             "user_type": user.user_type,
-            # Add more fields as needed
+            # Add more fields as neededsign
         }
 
         return jsonify({"customerProfileData": user_data}), 200
