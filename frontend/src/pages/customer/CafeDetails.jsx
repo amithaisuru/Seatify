@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import Toast from '../../components/Toast'; // Import your Toast component
+import Toast from '../../components/Toast';
 import CafeLayout from '../../components/CafeLayout';
 import { BASE_URL } from '../../constants/config';
+import SeatMap from '../../components/SeatMap'; 
 import {
   MapPin,
   Phone,
@@ -192,8 +193,6 @@ return (
 
   </div>
 </div>
-
-
 
     {/* Display menus */}
     <div className="mt-4 ">
