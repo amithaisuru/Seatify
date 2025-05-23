@@ -12,11 +12,11 @@ import {
   Landmark
 } from 'lucide-react';
 
-
-import image1 from '../../assets/menuImages/menu1.jpg';
-import image2 from '../../assets/menuImages/menu2.jpg';
-import image3 from '../../assets/menuImages/menu3.jpg';
 import cafeImage from '../../assets/restuarentimages/HotWok.jpeg';
+
+const imageModules = import.meta.glob('../../assets/menuImages/*.{jpg,png,webp}', { eager: true });
+
+const menuImages = Object.values(imageModules).map(mod => mod.default);
 
 function CafeDetails() {
 const { id } = useParams();  // Get cafe id from URL
@@ -36,12 +36,12 @@ const delayLogout = () => {
 const [selectedImage, setSelectedImage] = useState(null);
 
 
-const menuImages = [
-  image1,
-    image2,
-    image3,
+// const menuImages = [
+//   image1,
+//     image2,
+//     image3,
   
-]; 
+// ]; 
 
 const fetchCafeDetails = async () => {
 try {
@@ -192,8 +192,6 @@ return (
 
   </div>
 </div>
-
-
 
     {/* Display menus */}
     <div className="mt-4 ">

@@ -9,7 +9,7 @@ const CafeLayout = ({ tables = [], chairs = [],width = 100, height = 60  }) => {
     >
       
       {/* Render tables */}
-      {/* {tables.map((table, index) => (
+      {tables.map((table, index) => (
         <div
           key={`table-${index}`}
           className="absolute w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm"
@@ -21,10 +21,10 @@ const CafeLayout = ({ tables = [], chairs = [],width = 100, height = 60  }) => {
         >
           {table.label}
         </div>
-      ))} */}
+      ))}
 
       {/* Render chairs */}
-      {/* {chairs.map((chair, index) => (
+      {chairs.map((chair, index) => (
         <div
           key={`chair-${index}`}
           className={`absolute w-6 h-6 rounded-md text-xs text-white flex items-center justify-center 
@@ -37,7 +37,7 @@ const CafeLayout = ({ tables = [], chairs = [],width = 100, height = 60  }) => {
         >
           {chair.label}
         </div>
-      ))} */}
+      ))}
     </div>
   );
 };
