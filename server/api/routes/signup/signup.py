@@ -106,11 +106,13 @@ def signup():
 
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                upload_folder = os.path.join(current_app.root_path, 'uploads', 'cafes')
-                os.makedirs(upload_folder, exist_ok=True)
-                file_path = os.path.join(upload_folder, filename)
+                cafe_folder = os.path.join(current_app.root_path, 'uploads', 'cafes', f"cafe_{email}")
+                os.makedirs(cafe_folder, exist_ok=True)
+                file_path = os.path.join(cafe_folder, filename)
                 file.save(file_path)
-                image_url = f"/uploads/cafes/{filename}"
+
+                image_url = f"/uploads/cafes/cafe_{email}/{filename}"
+
 
             new_cafe = Cafe(
                 owner_id=new_user.id,
@@ -134,10 +136,12 @@ def signup():
 
 
 # Static route to serve uploaded images
-@signup_bp.route('/uploads/cafes/<filename>')
-def serve_cafe_image(filename):
-    upload_folder = os.path.join(current_app.root_path, 'uploads', 'cafes')
-    return send_from_directory(upload_folder, filename)
+@signup_bp.route('/uploads/cafes/<cafe_id>/<filename>')
+def serve_cafe_image(cafe_id, filename):
+    folder = os.path.join(app.root_path, 'uploads', 'cafes', f"cafe_{cafe_id}")
+    return send_from_directory(folder, filename)
+
+
 @signup_bp.route('/locations',methods=['GET'])
 def fetchLocations():
     try:
