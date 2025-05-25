@@ -6,6 +6,7 @@ import { AuthContext } from '../../context/AuthContext';
 function Details() {
   const { token } = useContext(AuthContext);
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
+  const [profile, setProfile] = useState(null); 
   const [formData, setFormData] = useState({
     cafe_name: '',
     email: '',
@@ -36,6 +37,8 @@ function Details() {
           location: fetchedProfile.location?.name || '',
           contact_number: fetchedProfile.contact_number || ''
         }); // editable version
+        setProfile(fetchedProfile);
+
       }
       else{
         if (data.error === "Token has expired!") {
@@ -227,7 +230,12 @@ function Details() {
           type="button"
           onClick={() => {
             setIsEditing(false);
-            setFormData({ email: profile?.email });
+            setFormData({
+              email: profile?.email || '',
+              cafe_name: profile?.cafe_name || '',
+              location: profile?.location?.name || '',
+              contact_number: profile?.contact_number || '',
+            });
           }}
           className="h-10 w-24 flex items-center justify-center px-4 py-2 text-sm rounded-md custom-button bg-gray-500 hover:bg-gray-600 text-white transition-colors duration-300"
         >
