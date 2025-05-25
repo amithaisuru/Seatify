@@ -12,7 +12,8 @@ import CustomerHome from './pages/customer/CustomerHomePage';
 import CafeDetails from './pages/customer/CafeDetails';
 import AdminUserProfiles from './pages/Admin/UserProfiles';
 import AddUsers from './pages/Admin/AddUsers';
-
+import CafeLayoutPage from './pages/cafe/CafeLayoutPage';
+import AnalyticsDashboard from './pages/cafe/AnalyticsDashboard';
 function App() {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -71,6 +72,16 @@ function App() {
               <AddUsers/>
             </ProtectedRoute>
           } /> 
+          <Route path="/cafelayout" element={
+            <ProtectedRoute>
+              <CafeLayoutPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/analytics" element={
+            <ProtectedRoute>
+              <AnalyticsDashboard />
+            </ProtectedRoute>
+          } />
         </Routes>
         </div>
       </div>
