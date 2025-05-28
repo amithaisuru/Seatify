@@ -71,7 +71,7 @@ return (
             </div>
             <div className='bg-gray-200 dark:bg-gray-800 rounded-md p-4'>
                 <div className="w-full max-w-[100%] overflow-auto">
-                    <CafeLayout tables={tables} chairs={chairs} />
+                    {/* <CafeLayout tables={tables} chairs={chairs} /> */}
                 </div>
             </div>
         </main>
