@@ -78,15 +78,37 @@ function Sidebar({ isOpen, setIsOpen }) {
             )}
             {/* cafe */}
             {user.user_type === 2 && (
+            <ul>
+              <li>
+                <Link 
+                  to="/cafelayout"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                >
+                  Cafe Layout
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/analytics"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                >
+                  Analytics Dashboard
+                </Link>
+              </li>
               <li>
                 <Link 
                   to="/details"
                   onClick={() => setIsOpen(false)}
                   className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
-                  Details
+                  Cafe Profile
                 </Link>
               </li>
+            </ul>
+
+              
             )}
             {/*admin*/}
             {user.user_type === 3 && (
