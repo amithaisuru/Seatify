@@ -10,6 +10,11 @@ function CafeLayoutPage() {
     const [tables, setTables] = useState([])
     const [chairs, setChairs] = useState([])
 
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState('');
+      const [localChairs, setLocalChairs] = useState([]);
+    const [localTables, setLocalTables] = useState([]);
+
     const fetchCafeLayout= async () => {
         try{
             const response = await fetch(`${BASE_URL}/cafeLayout`, {
@@ -19,14 +24,10 @@ function CafeLayoutPage() {
             'Authorization': `Bearer ${token}` 
             }
         });
-
         if(response.ok) {
             const data = await response.json();
             setTables(data.tables);
             setChairs(data.chairs);
-
-            
-
         }
         else{
             if (data.error === "Token has expired!") {
@@ -56,8 +57,41 @@ function CafeLayoutPage() {
         setToast({ show: true, type: 'error', message: 'An error occurred while fetching profile data.' });
         }
     };
+// handle save occupancy setting manually
+    const handleSave = async () => {
+      console.log('Saving layout...');
+      console.log(localTables)
+      console.log(localChairs)
+      setSaving(true);
+      try {
+        const response = await fetch(`${BASE_URL}/cafeLayoutUpdate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            tables: localTables,
+            chairs: localChairs,
+          }),
+        });
 
-  useEffect(() => {
+        if (response.ok) {
+          // const data = await response.json();
+          // console.log('Save response:', data);
+          setMessage('Layout saved successfully!');
+        } else {
+          setMessage(`Error: ${data.error || 'Failed to save layout'}`);
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        setMessage('Server error. Please try again later.');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+useEffect(() => {
     fetchCafeLayout();
 
 }, []);
@@ -71,7 +105,8 @@ return (
             </div>
             <div className='bg-gray-200 dark:bg-gray-800 rounded-md p-4'>
                 <div className="w-full max-w-[100%] overflow-auto">
-                    {/* <CafeLayout tables={tables} chairs={chairs} /> */}
+                    <CafeLayout tables={tables} chairs={chairs} handleSave={handleSave} message={message} saving={saving}
+                      localChairs={localChairs} setLocalChairs={setLocalChairs} localTables={localTables} setLocalTables={setLocalTables} />
                 </div>
             </div>
         </main>
@@ -81,7 +116,7 @@ return (
         type={toast.type}
         message={toast.message}
         onClose={() => setToast({ show: false, type: '', message: '' })}
-/>
+    />
 )}
 </>
 );
