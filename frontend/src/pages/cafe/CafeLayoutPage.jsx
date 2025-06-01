@@ -106,7 +106,8 @@ return (
             <div className='bg-gray-200 dark:bg-gray-800 rounded-md p-4'>
                 <div className="w-full max-w-[100%] overflow-auto">
                     <CafeLayout tables={tables} chairs={chairs} handleSave={handleSave} message={message} saving={saving}
-                      localChairs={localChairs} setLocalChairs={setLocalChairs} localTables={localTables} setLocalTables={setLocalTables} />
+                      localChairs={localChairs} setLocalChairs={setLocalChairs} localTables={localTables} setLocalTables={setLocalTables}
+                      editable={true} />
                 </div>
             </div>
         </main>
