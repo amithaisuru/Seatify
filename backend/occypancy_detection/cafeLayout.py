@@ -1,12 +1,21 @@
-from table import Table
 from chair import Chair
 from person import Person
+from table import Table
+
 
 class CafeLayout:
     def __init__(self):
         self.tables = []
         self.chairs = []
         self.people = []
+
+    def read_chair_list(self, chair_list):
+        for chair in chair_list:
+            chair_id = chair[0]
+            top_left = (chair[1], chair[2])
+            bottom_right = (chair[3], chair[4])
+            chair_obj = Chair(chair_id, top_left, bottom_right)
+            self.add_chair(chair_obj)
 
     def add_table(self, table):
         self.tables.append(table)
@@ -16,46 +25,6 @@ class CafeLayout:
     
     def add_person(self, person):
         self.people.append(person)
-
-    def calculateIoU(self, boxA, boxB):
-        x1_1, y1_1 = boxA.topLeft
-        x2_1, y2_1 = boxA.bottomRight
-        x1_2, y1_2 = boxB.topLeft
-        x2_2, y2_2 = boxB.bottomRight
-
-        #intersect coordinates
-        x_left = max(x1_1, x1_2)
-        y_top = max(y1_1, y1_2)
-        x_right = min(x2_1, x2_2)
-        y_bottom = min(y2_1, y2_2)
-
-        #calculate area of intersection rectangle
-        if x_right < x_left or y_bottom < y_top:
-            return 0.0
-        intersection_area = (x_right - x_left) * (y_bottom - y_top)
-
-        #union area
-        boxA_area = (x2_1 - x1_1) * (y2_1 - y1_1)
-        boxB_area = (x2_2 - x1_2) * (y2_2 - y1_2)
-        union_area = boxA_area + boxB_area - intersection_area
-
-        #calculate IoU
-        iou = intersection_area / union_area if union_area > 0 else 0.0
-        return iou
-    
-    def detect_occupancy(self, IOU_THRESHOLD=0.5):
-        """
-        Detects occupancy of chairs based on their IoU with tables.
-        """
-        for chair in self.chairs:
-            if chair.occupied:
-                continue
-            for person in self.people:
-                iou = self.calculateIoU(chair, person)
-                if iou > IOU_THRESHOLD:
-                    chair.occupied = True
-                    person.sit_down()
-                    break
 
     def get_layout(self):
         layout = {
@@ -83,3 +52,29 @@ class CafeLayout:
             })
         
         return layout
+    
+    def show_graphical_layout(self):
+        import json
+        import tkinter as tk
+
+        root = tk.Tk()
+        root.title("Cafe Layout Visualization")
+        canvas = tk.Canvas(root, width=500, height=500, bg="white")
+        canvas.pack(pady=20)
+
+        # Draw tables
+        for table in self.tables:
+            x1, y1 = table.topLeft
+            x2, y2 = table.bottomRight
+            canvas.create_rectangle(x1, y1, x2, y2, fill="blue", outline="black")
+            canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=table.id, fill="white")
+
+        # Draw chairs
+        for chair in self.chairs:
+            x1, y1 = chair.topLeft
+            x2, y2 = chair.bottomRight
+            fill_color = "green" if chair.occupied else "red"
+            canvas.create_rectangle(x1, y1, x2, y2, fill=fill_color, outline="black")
+            canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=chair.id, fill="black")
+
+        root.mainloop()
