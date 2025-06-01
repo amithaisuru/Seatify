@@ -88,8 +88,6 @@ def get_seats_by_cafe_id(cafe_id):
             { "x": 280, "y": 120, "label": "C7", "status": "available" },
             { "x": 350, "y": 140, "label": "C8", "status": "available" },
             { "x": 310, "y": 140, "label": "C12", "status": "available" },
-            
-
         ]
 
         # For demonstration, let's assume all seats are available
