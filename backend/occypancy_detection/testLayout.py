@@ -1,11 +1,9 @@
-import json
 import tkinter as tk
-
-from cafeLayout import CafeLayout
+import json
+from table import Table
 from chair import Chair
 from person import Person
-from table import Table
-
+from cafeLayout import CafeLayout
 
 class CafeLayoutTester:
     def __init__(self, tables, chairs, people):
