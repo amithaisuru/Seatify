@@ -107,9 +107,6 @@ const handleSave = async () => {
     setToast({ show: true, type: 'error', message: 'Error updating profile' });
   }
 };
-
-
-
   useEffect(() => {
     fetchProfile();
   }, []);
