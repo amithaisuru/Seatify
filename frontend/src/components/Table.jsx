@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import Toast from './Toast';
 import { useContext } from 'react';
+import { BASE_URL } from '../constants/config';
 
 function Table1({ cafes = []  , tableTopic ,fetchUsers}) {
     const [searchTerm, setSearchTerm] = React.useState('');
@@ -32,7 +33,7 @@ function Table1({ cafes = []  , tableTopic ,fetchUsers}) {
             if (response.ok) {
                 console.log('User deleted successful:', data);
                 setToast({ show: true, type: 'success', message: 'Successfully deleted!' });
-                fetchUsers();
+                await fetchUsers();
             } 
             else {
                 if (data.error === "Token has expired!") {

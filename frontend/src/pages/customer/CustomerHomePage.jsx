@@ -128,7 +128,7 @@ function CustomerHome() {
         <div className="flex text-sm flex-col md:flex-row items-center gap-4 mb-6">
             <input
                 type="text"
-                placeholder="Search by Location or Cafe name"
+                placeholder="Search by Location or Name"
                 className="w-full md:w-1/2 p-2 rounded-md border shadow-sm dark:bg-gray-800 dark:text-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -155,7 +155,7 @@ function CustomerHome() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{cafe.location.name}</p>
             {/* Real-time seat status */}
             <span className={`inline-block px-3 py-1 text-xs rounded-full ${cafe.seats_available > 0 ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
-                {cafe.seats_available > 0 ? 'Seats Available' : 'Full'}
+                {cafe.seats_available > 0 ? 'Seats Available' : 'Seats not Available'}
             </span>
             </div>
         ))}

@@ -5,6 +5,9 @@ from routes.signup.signup import signup_bp
 from routes.authentication.login import login_bp
 from routes.customerHomepage.customerHomepage import cafes_bp
 from routes.adminAddUsers.adminAddUsers import admin_users_profiles
+from routes.customerProfile.customerProfile import customerProfile_bp
+from routes.cafeProfileDetails.cafeProfileDetails import cafeProfileDetails_bp
+from routes.cafeLayout.cafeLayout import cafeLayout_bp
 # from routes.profile.profile import profile_bp
 
 def create_app():
@@ -48,6 +51,9 @@ def create_app():
     # app.register_blueprint(profile_bp)
     app.register_blueprint(cafes_bp)
     app.register_blueprint(admin_users_profiles)
+    app.register_blueprint(customerProfile_bp)
+    app.register_blueprint(cafeProfileDetails_bp)
+    app.register_blueprint(cafeLayout_bp)
 
     return app
 
