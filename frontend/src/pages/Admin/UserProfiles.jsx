@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { useContext } from 'react';
-import Toast from '../../components/Toast'; // Import your Toast component
-import Table1 from '../../components/Table'; // Import your Table1 component
+import Toast from '../../components/Toast'; 
+import Table1 from '../../components/Table';
+import { BASE_URL } from '../../constants/config';
 
 function AdminUserProfiles() {
   const { token } = useContext(AuthContext);
@@ -178,7 +179,7 @@ function AdminUserProfiles() {
 
   const fetchUsers = async (e) =>{
     try {
-      const response = await fetch('http://localhost:5000/admin/getUsers', {
+      const response = await fetch(`${BASE_URL}/admin/getUsers`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -236,12 +237,12 @@ function AdminUserProfiles() {
         </div>
         <div>
           <div className="p-2">
-              <Table1 cafes={adminUsers} tableTopic={'Admin'}/>
+              <Table1 cafes={adminUsers} tableTopic={'Admin'} fetchUsers={fetchUsers}/>
           </div>
         </div>
         <div>
           <div className="p-2">
-              <Table1 cafes={customerUsers} tableTopic={'Customers'}/>
+              <Table1 cafes={customerUsers} tableTopic={'Customers'} fetchUsers={fetchUsers}/>
           </div>
         </div>
         <div>

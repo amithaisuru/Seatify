@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DarkModeToggle from '../components/DarkModeToggle';
 import Toast from '../components/Toast';
+import { BASE_URL } from '../constants/config';
 
 function Signup() {
   const [email, setEmail] = useState('');
@@ -15,11 +16,10 @@ function Signup() {
   const [cafeName, setCafeName] = useState('');
   const [location, setLocation] = useState('');
   const [contactNumber, setContactNumber] = useState('');
+  const [image, setImage] = useState(null);
 
   // store fetched locations
   const [locations, setLocations] = useState([]);
-
-
   // frontend input validation
   const inputValidate=()=> {
     const Errors = {};
@@ -46,6 +46,61 @@ function Signup() {
     return Object.keys(Errors).length === 0;
   }
 
+  //   const handleSignup = async (e) => {
+  //   e.preventDefault();
+
+  //   // frontend input validation
+  //   if (!inputValidate()) {
+  //     // if there is an error, return and show the error message
+  //     return;
+  //   }
+  //   const bodyData = {
+  //     email,
+  //     password,
+  //     user_type: userType
+  //   };
+
+  //   if (userType === 2) {
+  //     bodyData.cafe_name = cafeName;
+  //     bodyData.location = location;
+  //     bodyData.contact_number = contactNumber;
+  //   }
+  //   console.log(bodyData)
+
+  //   setMessages({}); // Clear previous messages
+
+  //   try 
+  //   {
+  //     const response = await fetch(`${BASE_URL}/signup`, {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(bodyData),
+  //     });
+
+  //     const data= await response.json();
+
+  //     if (response.ok) {
+  //       console.log('Login successful:', data);
+  //       setToast({ show: true, type: 'success', message: 'Login successful!' });
+  //       setTimeout(() => {
+  //         navigate('/login');
+  //       }, 2000); // Small delay so toast shows before redirect
+  //     } 
+  //     else {
+  //       setToast({ show: true, type: 'error', message: 'Login failed!' });
+  //       console.log('Login failed:', data.message);
+  //       setTimeout(() => {
+  //         navigate('/signup');
+  //       }, 2000); // Small delay so toast shows before redirect
+  //       }
+  //   }
+  //     catch(error) {
+  //       console.error('Network or unexpected error:', error);
+  //       setToast({ show: true, type: 'error', message: 'Network error! Please try again later.' });
+        
+  //   }
+  // };
+
   // handle signup
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -55,28 +110,29 @@ function Signup() {
       // if there is an error, return and show the error message
       return;
     }
+   const formData = new FormData();
+  formData.append('email', email);
+  formData.append('password', password);
+  formData.append('user_type', userType);
 
-    const bodyData = {
-      email,
-      password,
-      user_type: userType
-    };
-
-    if (userType === 2) {
-      bodyData.cafe_name = cafeName;
-      bodyData.location = location;
-      bodyData.contact_number = contactNumber;
+  if (userType === 2) {
+    formData.append('cafe_name', cafeName);
+    formData.append('location', location);
+    formData.append('contact_number', contactNumber);
+    if (image) {
+      formData.append('image', image);
     }
-    console.log(bodyData)
+  }
 
     setMessages({}); // Clear previous messages
 
     try 
     {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch(`${BASE_URL}/signup`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bodyData),
+      // headers: { 'Content-Type': 'application/json' },
+      // body: JSON.stringify(bodyData),
+      body: formData,
       });
 
       const data= await response.json();
@@ -105,7 +161,7 @@ function Signup() {
 
   const fetchLocations = async (e) =>{
     try {
-      const response = await fetch('http://localhost:5000/locations', {
+      const response = await fetch(`${BASE_URL}/locations`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -130,7 +186,7 @@ function Signup() {
     <div className={` flex w-screen min-h-screen flex-1 flex-col px-6 py-12 lg:px-8`}>
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-3xl font-bold leading-9 tracking-tight text-primary-darker dark:text-primary-lighter font-sans">
-            Sign in to your account
+            Sign Up to your account
         </h2>
         <DarkModeToggle/>
       </div>
@@ -191,6 +247,7 @@ function Signup() {
                 <option value={2}>Cafe</option>
             </select>  
           </div>
+          
           {messages.userType && <p className="text-red-500 text-sm mt-2">{messages.userType}</p>}
           </div>
         {userType === 2 && (
@@ -244,6 +301,25 @@ function Signup() {
             </div>
             {messages.contactNumber && <p className="text-red-500 text-sm mt-2">{messages.contactNumber}</p>}
           </div>
+          <div>
+          <label className="block text-md font-medium leading-6 text-gray-600 dark:text-gray-400 mt-4">
+            Cafe Image
+          </label>
+          <div className="mt-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-primary-dark file:text-white
+                        hover:file:bg-primary-light"
+            />
+          </div>
+        </div>
+
           </>
           )}
           <div>

@@ -4,12 +4,13 @@ import { AuthContext } from '../context/AuthContext';
 import jwt_decode from 'jwt-decode';
 import DarkModeToggle from '../components/DarkModeToggle';
 import Toast from '../components/Toast'; // Import your Toast component
-
+import { BASE_URL } from '../constants/config';
+import landImage2 from '../assets/Landpage/LandPageImage3.png';
 function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [email, setEmail] = useState('user1@example.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [messages, setMessages] = useState({});
 
   const [toast, setToast] = useState({ show: false, type: '', message: '' });
@@ -41,7 +42,7 @@ function Login() {
 
     setMessages({}); // Clear previous messages
 
-    try{const response = await fetch('http://localhost:5000/login', {
+    try{const response = await fetch(`${BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -63,11 +64,14 @@ function Login() {
 
       setTimeout(() => {
         if (userType === 1) {
-          navigate('/profile');
+          // Customer
+          navigate('/homepage');
         } else if (userType === 2) {
+          // Cafe Owner
           navigate('/details');
         }
         else{
+          // Admin
           navigate('/homepage')
         }
       }, 1000); // Small delay so toast shows before redirect
@@ -163,14 +167,22 @@ function Login() {
     <div className="flex flex-col md:flex-row min-h-screen bg-primary-lighter dark:bg-primary-darker overflow-hidden font-poppins">
       
       {/* Left Side - Introduction */}
-      <div className="flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-900 p-10 text-center">
-        <h1 className="text-5xl font-bold mb-6 text-primary-dark dark:text-primary-lighter">
+      <div className="flex-1 flex flex-col justify-center items-center text-center p-10 bg-cover bg-center bg-no-repeat"
+  style={{ backgroundImage: `url(${landImage2})`}} >
+        
+        <div className="flex flex-col justify-center items-center inset-0 bg-black bg-opacity-50 z-0 w-full p-4 rounded-md">
+      
+          <h1 className="text-5xl font-bold mb-6 text-primary-dark dark:text-primary-lighter">
           Welcome to Seatify
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md">
-          Find, Book, and Relax at your favorite cafes and lounges.  
-          <br /> Seamless seat reservation made simple.
+  
+       
+         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-md">
+          Find, Book, and Relax at your Favorite cafes and Lounges.  
+          Seamless Seat Reservation made simple.
         </p>
+    
+        </div>
       </div>
 
       {/* Right Side - Login Form */}
