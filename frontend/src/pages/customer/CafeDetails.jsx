@@ -24,7 +24,7 @@ const { token } = useContext(AuthContext);
 const [cafe, setCafe] = useState(null);
 
 const [tables, setTables] = useState([])
-const [chairs, setChairs] = useState([]) //seats
+const [chairs, setChairs] = useState([])
 
 const [toast, setToast] = useState({ show: false, type: '', message: '' });//toast messages
 const { logout } = useContext(AuthContext);
