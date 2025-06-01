@@ -78,3 +78,13 @@ class CafeLayout:
             canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=chair.id, fill="black")
 
         root.mainloop()
+    
+    def update_chair_occupancy(self, chair_id, occupied=False, person_id=None):
+        for chair in self.chairs:
+            if chair.id == chair_id:
+                chair.occupied = occupied
+                if occupied and person_id is not None:
+                    chair.occupant = person_id
+                else:
+                    chair.occupant = None
+                break

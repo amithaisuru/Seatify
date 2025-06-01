@@ -1,7 +1,7 @@
-from flask import Blueprint, jsonify
-from extensions import db
 from classModels.Cafe import Cafe
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from extensions import db
+from flask import Blueprint, jsonify
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 
 cafes_bp = Blueprint('cafes', __name__)
@@ -88,8 +88,6 @@ def get_seats_by_cafe_id(cafe_id):
             { "x": 280, "y": 120, "label": "C7", "status": "available" },
             { "x": 350, "y": 140, "label": "C8", "status": "available" },
             { "x": 310, "y": 140, "label": "C12", "status": "available" },
-            
-
         ]
 
         # For demonstration, let's assume all seats are available

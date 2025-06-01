@@ -138,7 +138,7 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
             roi = frame[y1:y2, x1:x2]
             p = pose_model(roi)[0]
 
-
+            assigned_chair_id = None  # Initialize chair ID for this person
             # If keypoints were found, extracts the raw (n,17,3) array from p.keypoints.data.
             # In the shape tuple (n, 17, 3), that leading n is simply the number of person instances (i.e. detections) 
             # that the pose model found in your cropped image
@@ -169,10 +169,22 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
                     
                     if kneeAngleResult or torsoAngleResult:
                         posture, color = 'sitting',  (0,255,0)
+                        # Find the chair with highest IoU
+                        max_iou = 0
+                        for chair in chair_boxes:
+                            chair_id, cx1, cy1, cx2, cy2 = chair
+                            iou = bbox_iou([x1,y1,x2,y2], [cx1,cy1,cx2,cy2])
+                            if iou > IOU_THRESHOLD and iou > max_iou:
+                                max_iou = iou
+                                assigned_chair_id = chair_id
                     else:
                         posture, color = 'standing', (0,0,255)
                     
             text = f"{posture} {conf:.2f} ID:{track_id}"
+
+            #TODO: update layut here
+            if assigned_chair_id is not None:
+                cafe_layout.update_chair_occupancy(assigned_chair_id, occupied=True, person_id=track_id)
         else:
             # chair
             color = (255,0,0)
@@ -183,6 +195,7 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
         # cv2.putText(frame, text, (x1, y1-10),
         #             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
         # print(f"  → {text}  box=[{x1},{y1},{x2},{y2}]")
+    
     print(chair_boxes)
     cafe_layout.read_chair_list(chair_boxes)
     cafe_layout.show_graphical_layout()
