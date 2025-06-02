@@ -56,7 +56,7 @@ class CafeLayoutDbModel(Base):
             if not cafe_layout:
                 session.close()
                 raise ValueError(f"No CafeLayout found for cafe_id {cafe_id}")
-            cafe_layout.cafe_layout_data = layout_data
+            cafe_layout.model_layout_data = layout_data
             cafe_layout.updated_at = datetime.utcnow()
             session.add(cafe_layout)
             session.commit()

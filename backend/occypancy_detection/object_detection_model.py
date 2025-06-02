@@ -196,12 +196,9 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
         #             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
         # print(f"  → {text}  box=[{x1},{y1},{x2},{y2}]")
     
-    print(chair_boxes)
     cafe_layout.read_chair_list(chair_boxes)
     cafe_layout.show_graphical_layout()
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
+    cafe_layout.update_databse()
         #need to wait here until opened windows is closed by user
 
     break

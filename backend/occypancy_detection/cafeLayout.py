@@ -124,4 +124,4 @@ class CafeLayout:
             ]
         }
         cafe_layut_db_handler = CafeLayoutDbModel()
-        cafe_layut_db_handler.update_layout_data(layout_test_data,3)
+        cafe_layut_db_handler.update_layout_data(layout_data,3)
