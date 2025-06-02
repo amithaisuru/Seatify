@@ -230,6 +230,7 @@ return (
     </div>
     <div className="w-full max-w-[100%] overflow-auto">
     <CafeLayout tables={tables} chairs={chairs} />
+    
     </div>
 </main>
 </div>
