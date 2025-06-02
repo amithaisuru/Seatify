@@ -1,6 +1,7 @@
 import json
 
 from chair import Chair
+from init_db import CafeLayoutDbModel
 from person import Person
 from table import Table
 
@@ -10,6 +11,7 @@ class CafeLayout:
         self.tables = []
         self.chairs = []
         self.people = []
+        self.cafe_id = None
 
     def read_chair_list(self, chair_list):
         for chair in chair_list:
@@ -92,11 +94,6 @@ class CafeLayout:
                 break
     
     def update_databse(self):
-        '''
-        meke below format and update it in to databse
-        {"chairs": [{"x": 80, "y": 60, "label": "C1", "status": "available"}, {"x": 150, "y": 60, "label": "C2", "status": "occupied"}, {"x": 80, "y": 120, "label": "C3", "status": "occupied"}, {"x": 170, "y": 90, "label": "C13", "status": "occupied"}, {"x": 160, "y": 130, "label": "C4", "status": "occupied"}, {"x": 130, "y": 150, "label": "C5", "status": "occupied"}, {"x": 280, "y": 60, "label": "C10", "status": "available"}, {"x": 320, "y": 60, "label": "C6", "status": "occupied"}, {"x": 360, "y": 80, "label": "C11", "status": "occupied"}, {"x": 370, "y": 110, "label": "C9", "status": "occupied"}, {"x": 280, "y": 120, "label": "C7", "status": "available"}, {"x": 350, "y": 140, "label": "C8", "status": "occupied"}, {"x": 310, "y": 140, "label": "C12", "status": "occupied"}], "tables": [{"x": 100, "y": 80, "label": "T1"}, {"x": 300, "y": 80, "label": "T2"}]}
-        the column in : model_layout_data = db.Column(db.JSON, nullable=True)
-        '''
         layout_data = {
             "chairs": [],
             "tables": []
@@ -115,3 +112,16 @@ class CafeLayout:
                 "y": table.center[1],
                 "label": f"T{table.id}"
             })
+        
+        #make dummy details for testing
+        layout_test_data = {
+            "chairs": [
+                {"x": 100, "y": 100, "label": "C1", "status": "available"},
+                {"x": 200, "y": 100, "label": "C2", "status": "occupied"}
+            ],
+            "tables": [
+                {"x": 150, "y": 150, "label": "T1"}
+            ]
+        }
+        cafe_layut_db_handler = CafeLayoutDbModel()
+        cafe_layut_db_handler.update_layout_data(layout_test_data,3)
