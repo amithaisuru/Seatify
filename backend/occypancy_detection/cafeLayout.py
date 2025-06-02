@@ -1,3 +1,5 @@
+import json
+
 from chair import Chair
 from person import Person
 from table import Table
@@ -88,3 +90,28 @@ class CafeLayout:
                 else:
                     chair.occupant = None
                 break
+    
+    def update_databse(self):
+        '''
+        meke below format and update it in to databse
+        {"chairs": [{"x": 80, "y": 60, "label": "C1", "status": "available"}, {"x": 150, "y": 60, "label": "C2", "status": "occupied"}, {"x": 80, "y": 120, "label": "C3", "status": "occupied"}, {"x": 170, "y": 90, "label": "C13", "status": "occupied"}, {"x": 160, "y": 130, "label": "C4", "status": "occupied"}, {"x": 130, "y": 150, "label": "C5", "status": "occupied"}, {"x": 280, "y": 60, "label": "C10", "status": "available"}, {"x": 320, "y": 60, "label": "C6", "status": "occupied"}, {"x": 360, "y": 80, "label": "C11", "status": "occupied"}, {"x": 370, "y": 110, "label": "C9", "status": "occupied"}, {"x": 280, "y": 120, "label": "C7", "status": "available"}, {"x": 350, "y": 140, "label": "C8", "status": "occupied"}, {"x": 310, "y": 140, "label": "C12", "status": "occupied"}], "tables": [{"x": 100, "y": 80, "label": "T1"}, {"x": 300, "y": 80, "label": "T2"}]}
+        the column in : model_layout_data = db.Column(db.JSON, nullable=True)
+        '''
+        layout_data = {
+            "chairs": [],
+            "tables": []
+        }
+        for chair in self.chairs:
+            layout_data["chairs"].append({
+                "x": chair.center[0],
+                "y": chair.center[1],
+                "label": f"C{chair.id}",
+                "status": "occupied" if chair.occupied else "available"
+            })
+        
+        for table in self.tables:
+            layout_data["tables"].append({
+                "x": table.center[0],
+                "y": table.center[1],
+                "label": f"T{table.id}"
+            })
