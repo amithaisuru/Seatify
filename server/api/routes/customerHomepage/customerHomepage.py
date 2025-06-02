@@ -3,6 +3,7 @@ from extensions import db
 from classModels.Cafe import Cafe
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
+from classModels.CafeLayout import CafeLayout
 
 cafes_bp = Blueprint('cafes', __name__)
 
@@ -59,7 +60,7 @@ def get_cafe_by_id(cafe_id):
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
 
-# fetch layout details
+# fetch layout details from db
 @cafes_bp.route('/cafes/<int:cafe_id>/layout', methods=['GET'])
 @jwt_required()
 def get_seats_by_cafe_id(cafe_id):
@@ -69,30 +70,42 @@ def get_seats_by_cafe_id(cafe_id):
             return jsonify({"error": "Cafe not found"}), 404
 
         # Hardcoded values for layout display
-        tables = [
-            { "x": 100, "y": 80, "label": "T1" },
-            { "x": 300, "y": 80, "label": "T2" }
-        ]
+        # tables = [
+        #     { "x": 100, "y": 80, "label": "T1" },
+        #     { "x": 300, "y": 80, "label": "T2" }
+        # ]
 
-        chairs = [
-            { "x": 80, "y": 60, "label": "C1", "status": "available" },
-            { "x": 150, "y": 60, "label": "C2", "status": "occupied" },
-            { "x": 80, "y": 120, "label": "C3", "status": "available" },
-            { "x": 170, "y": 90, "label": "C13", "status": "available" },
-            { "x": 160, "y": 130, "label": "C4", "status": "available" },
-            { "x": 130, "y": 150, "label": "C5", "status": "occupied" },
-            { "x": 280, "y": 60, "label": "C10", "status": "available" },
-            { "x": 320, "y": 60, "label": "C6", "status": "occupied" },
-            { "x": 360, "y": 80, "label": "C11", "status": "occupied" },
-            { "x": 370, "y": 110, "label": "C9", "status": "occupied" },
-            { "x": 280, "y": 120, "label": "C7", "status": "available" },
-            { "x": 350, "y": 140, "label": "C8", "status": "available" },
-            { "x": 310, "y": 140, "label": "C12", "status": "available" },
-            
+        # chairs = [
+        #     { "x": 80, "y": 60, "label": "C1", "status": "available" },
+        #     { "x": 150, "y": 60, "label": "C2", "status": "occupied" },
+        #     { "x": 80, "y": 120, "label": "C3", "status": "available" },
+        #     { "x": 170, "y": 90, "label": "C13", "status": "available" },
+        #     { "x": 160, "y": 130, "label": "C4", "status": "available" },
+        #     { "x": 130, "y": 150, "label": "C5", "status": "occupied" },
+        #     { "x": 280, "y": 60, "label": "C10", "status": "available" },
+        #     { "x": 320, "y": 60, "label": "C6", "status": "occupied" },
+        #     { "x": 360, "y": 80, "label": "C11", "status": "occupied" },
+        #     { "x": 370, "y": 110, "label": "C9", "status": "occupied" },
+        #     { "x": 280, "y": 120, "label": "C7", "status": "available" },
+        #     { "x": 350, "y": 140, "label": "C8", "status": "available" },
+        #     { "x": 310, "y": 140, "label": "C12", "status": "available" },
+        # ]
 
-        ]
+        tables=[]
+        chairs=[]
 
-        # For demonstration, let's assume all seats are available
+        layout = CafeLayout.query.filter_by(cafe_id=cafe.id).first()
+        if layout:
+            # If a layout exists, use the stored layout data
+            tables = layout.model_layout_data.get('tables', [])
+            chairs = layout.model_layout_data.get('chairs', [])
+        else:
+            # If no layout exists, return an empty layout
+            tables = []
+            chairs = []
+        
+        print("Tables:", tables)
+        print("Chairs:", chairs)
 
         return jsonify({
                     "cafe_id": cafe_id,
