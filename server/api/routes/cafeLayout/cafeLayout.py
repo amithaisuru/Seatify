@@ -53,29 +53,10 @@ def get_cafeLayout():
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
 
+
 @cafeLayout_bp.route('/cafeLayoutUpdate', methods=['POST'])
 @jwt_required()
 def save_layout():
-    # try:
-    #     user_id = get_jwt_identity()
-    #     data = request.get_json()
-
-    #     tables = data.get('tables', [])
-    #     chairs = data.get('chairs', [])
-
-    #     if not tables or not chairs:
-    #         return jsonify({"error": "Missing layout data"}), 400
-
-        
-
-    #     return jsonify({"message": "Layout saved successfully!"}), 200
-
-    # except SQLAlchemyError as e:
-    #     db.session.rollback()
-    #     return jsonify({"error": "Database error", "details": str(e)}), 500
-
-    # except Exception as e:
-    #     return jsonify({"error": "Unexpected error", "details": str(e)}), 500
     try:
         user_id = get_jwt_identity()
         data = request.get_json()
