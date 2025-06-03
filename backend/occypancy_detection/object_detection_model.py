@@ -85,7 +85,7 @@ IOU_THRESHOLD = 0.2
 
 # Start the detection + track stream
 stream = det_model.track(
-    source=r'HOTWOK-Cam1 - 1.mp4',
+    source=r'C:\Users\Amitha\uni\git-repos\Seatify\backend\occypancy_detection\HOTWOK-Cam1 - 1.mp4',
     tracker='bytetrack.yaml',
     classes=[0,56, 60],
     persist=True,
@@ -95,9 +95,9 @@ stream = det_model.track(
     stream=True
 )
 
-cafe_layout = CafeLayout()
 #process frames
 for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (frame_idx, res) as soon as each frame is done
+    cafe_layout = CafeLayout()
     frame = singleFrame.orig_img.copy() # copy of raw frame we annotate
     print(f"Frame {frameIndex}:")
 
@@ -176,4 +176,6 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
     cafe_layout.read_table_list(table_boxes)
     print(len(table_boxes), "tables detected in this frame")
     #cafe_layout.show_graphical_layout()
+    cafe_layout.map_chairs_to_tables()
+    cafe_layout.map_people_to_chairs()
     cafe_layout.update_databse()

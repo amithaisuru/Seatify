@@ -40,8 +40,6 @@ class CafeLayout:
     def add_person(self, id, top_left, bottom_right, posture='unknown'):
         person = Person(id, top_left, bottom_right, posture)
         self.people.append(person)
-        print(f"Person {id} added at {top_left} to {bottom_right}")
-        print(len(self.people), "is the count of people")
 
     def get_layout(self):
         layout = {
@@ -139,3 +137,64 @@ class CafeLayout:
         }
         cafe_layut_db_handler = CafeLayoutDbModel()
         cafe_layut_db_handler.update_layout_data(layout_data,3)
+
+    def map_people_to_chairs(self):
+        print("map people to chairs called")
+        for table in self.tables:
+            number_of_chairs = len(table.chairs)
+            iou_value = []
+            #calculate iou of each person with the table using calculate_iou method.
+            for person in self.people:
+                if not person.is_sitting:
+                    continue
+                person_box = (person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1])
+                table_box = (table.top_left[0], table.top_left[1], table.bottom_right[0], table.bottom_right[1])
+                iou = self.calculate_iou(person_box, table_box)
+                if iou > 0.1:
+                    iou_value.append((iou, person))
+                # Sort the iou_value list in descending order based on the iou value
+            iou_value.sort(reverse=True, key=lambda x: x[0])
+            # Map the top N people to the chairs, where N is the number of chairs
+            for i in range(min(number_of_chairs, len(iou_value))):
+                person = iou_value[i][1]
+                chair = table.chairs[i]
+                if chair.assign_occupant(person):
+                    print(f"Person {person.id} is assigned to Chair {chair.id} at Table {table.id}")
+                else:
+                    print(f"Person {person.id} could not be assigned to Chair {chair.id} at Table {table.id}")
+                        
+    
+    def map_chairs_to_tables(self):
+        print("map chair to tables called")
+        iou_threshold = 0.25
+        for chair in self.chairs:
+            #pass if chair already occupied
+            if chair.occupied:
+                continue
+            best_table = None
+            best_iou = 0
+            chair_box = (chair.top_left[0], chair.top_left[1], chair.bottom_right[0], chair.bottom_right[1])
+            for table in self.tables:
+                table_box = (table.top_left[0], table.top_left[1], table.bottom_right[0], table.bottom_right[1])
+                iou = self.calculate_iou(chair_box, table_box)
+                if iou > best_iou and iou > iou_threshold:
+                    best_iou = iou
+                    best_table = table
+            if best_table:
+                best_table.add_chair(chair)
+                print(f"Chair {chair.id} assigned to Table {best_table.id} with IoU {best_iou:.2f}")
+            else:
+                print(f"Chair {chair.id} could not be assigned to any table")
+    
+    def calculate_iou(self, box1, box2):
+        x1, y1, x2, y2 = box1
+        x1b, y1b, x2b, y2b = box2
+        xi1, yi1 = max(x1, x1b), max(y1, y1b)
+        xi2, yi2 = min(x2, x2b), min(y2, y2b)
+        inter_w = max(0, xi2 - xi1)
+        inter_h = max(0, yi2 - yi1)
+        inter = inter_w * inter_h
+        area1 = (x2 - x1) * (y2 - y1)
+        area2 = (x2b - x1b) * (y2b - y1b)
+        union = area1 + area2 - inter
+        return inter / union if union > 0 else 0

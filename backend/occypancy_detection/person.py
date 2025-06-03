@@ -7,14 +7,14 @@ class Person(CafeObjects):
         self.calculate_center()
         self.id = id
         if posture == 'sitting':
-            self.seated = True
+            self.is_sitting = True
         else:
-            self.seated = False
+            self.is_sitting = False
     
     def sit_down(self):
-        self.seated = True
+        self.is_sitting = True
         print(f"{self.id} is now seated.")
     
     def stand_up(self):
-        self.seated = False
+        self.is_sitting = False
         print(f"{self.id} has stood up.")
