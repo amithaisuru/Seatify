@@ -68,7 +68,6 @@ def hipKneeLevelCondition(kpts, crop_height):
     except:
         return False
 
-# IoU helper
 def bbox_iou(box1, box2):
     x1, y1, x2, y2 = box1
     x1b, y1b, x2b, y2b = box2
@@ -134,6 +133,7 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
 
         # Person branch
         if label == 'person':
+            print(f"  → Person {track_id} at [{x1},{y1},{x2},{y2}] with conf={conf:.2f}")
             # Defaults the posture to “unknown” with a yellow box
             posture, color = 'unknown', (0,255,255)
 
@@ -141,11 +141,6 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
             roi = frame[y1:y2, x1:x2]
             p = pose_model(roi)[0]
 
-            assigned_chair_id = None  # Initialize chair ID for this person
-            # If keypoints were found, extracts the raw (n,17,3) array from p.keypoints.data.
-            # In the shape tuple (n, 17, 3), that leading n is simply the number of person instances (i.e. detections) 
-            # that the pose model found in your cropped image
-            # Since you’re cropping around a single detected box, in most cases n will be 1
             if p.keypoints is not None:
                 # Extract the raw (n,17,3) tensor of keypoints
                 kpts_np = p.keypoints.data.cpu().numpy()  # shape (n,17,3)
@@ -163,31 +158,12 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
 
                     # Compute the hip-knee level condition
                     hipKneeLevelResult = hipKneeLevelCondition(kpts, crop_height=(y2-y1))
-                    
-                    # # 4th test: does this person overlap any chair?
-                    # iouSittingResult = any(
-                    #     bbox_iou([x1,y1,x2,y2], cb) > IOU_THRESHOLD
-                    #     for cb in chair_boxes
-                    # )
-                    
                     if kneeAngleResult or torsoAngleResult:
                         posture, color = 'sitting',  (0,255,0)
-                        # Find the chair with highest IoU
-                        max_iou = 0
-                        for chair in chair_boxes:
-                            chair_id, cx1, cy1, cx2, cy2 = chair
-                            iou = bbox_iou([x1,y1,x2,y2], [cx1,cy1,cx2,cy2])
-                            if iou > IOU_THRESHOLD and iou > max_iou:
-                                max_iou = iou
-                                assigned_chair_id = chair_id
                     else:
                         posture, color = 'standing', (0,0,255)
                     
             text = f"{posture} {conf:.2f} ID:{track_id}"
-
-            #TODO: update layut here
-            if assigned_chair_id is not None:
-                cafe_layout.update_chair_occupancy(assigned_chair_id, occupied=True, person_id=track_id)
         else:
             # chair
             color = (255,0,0)
@@ -204,5 +180,5 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
     print(len(chair_boxes), "chairs detected in this frame")
     cafe_layout.read_table_list(table_boxes)
     print(len(table_boxes), "tables detected in this frame")
-    cafe_layout.show_graphical_layout()
+    #cafe_layout.show_graphical_layout()
     cafe_layout.update_databse()
