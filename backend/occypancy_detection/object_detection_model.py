@@ -86,9 +86,9 @@ IOU_THRESHOLD = 0.2
 
 # Start the detection + track stream
 stream = det_model.track(
-    source=r'video1.mp4',
+    source=r'HOTWOK-Cam1 - 1.mp4',
     tracker='bytetrack.yaml',
-    classes=[0,56],
+    classes=[0,56, 60],
     persist=True,
     show=False,
     save=True,
@@ -97,7 +97,6 @@ stream = det_model.track(
 )
 
 cafe_layout = CafeLayout()
-
 #process frames
 for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (frame_idx, res) as soon as each frame is done
     frame = singleFrame.orig_img.copy() # copy of raw frame we annotate
@@ -116,13 +115,17 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
         if singleFrame.names[cls_id] == 'chair':
             chairBoundingBox = list(map(int, (track_id, x1,y1,x2,y2)))
             chair_boxes.append(chairBoundingBox)
-        
+    
+    table_boxes = []
+    for (x1,y1,x2,y2), cls_id, track_id in zip(boxesXYXYs, cls_ids, track_ids):
+        if singleFrame.names[cls_id] == 'dining table':
+            tableBoundingBox = list(map(int, (track_id, x1,y1,x2,y2)))
+            table_boxes.append(tableBoundingBox)
+
     # print(f"  → Found {len(chair_boxes)} chairs in this frame")
     # print(f"  → Found {len(boxesXYXYs)} total detections in this frame")
-
     #Iterate through each detection in this frame
     for (x1, y1, x2, y2), conf, cls_id, track_id in zip(boxesXYXYs, confs, cls_ids, track_ids): #Zips the four arrays so you handle each detection in lockstep.
-        
         #Converts the box coords to integers
         x1, y1, x2, y2 = map(int, (x1, y1, x2, y2))
 
@@ -197,8 +200,9 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
         # print(f"  → {text}  box=[{x1},{y1},{x2},{y2}]")
     
     cafe_layout.read_chair_list(chair_boxes)
+    #print chair_boxes list length
+    print(len(chair_boxes), "chairs detected in this frame")
+    cafe_layout.read_table_list(table_boxes)
+    print(len(table_boxes), "tables detected in this frame")
     cafe_layout.show_graphical_layout()
     cafe_layout.update_databse()
-        #need to wait here until opened windows is closed by user
-
-    break
