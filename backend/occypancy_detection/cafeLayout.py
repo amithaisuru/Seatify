@@ -37,8 +37,8 @@ class CafeLayout:
     def add_chair(self, chair):
         self.chairs.append(chair)
     
-    def add_person(self, id, top_left, bottom_right):
-        person = Person(id, top_left, bottom_right)
+    def add_person(self, id, top_left, bottom_right, posture='unknown'):
+        person = Person(id, top_left, bottom_right, posture)
         self.people.append(person)
         print(f"Person {id} added at {top_left} to {bottom_right}")
         print(len(self.people), "is the count of people")

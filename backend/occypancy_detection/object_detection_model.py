@@ -133,7 +133,7 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
 
         # Person branch
         if label == 'person':
-            print(f"  → Person {track_id} at [{x1},{y1},{x2},{y2}] with conf={conf:.2f}")
+            print("person detected")
             # Defaults the posture to “unknown” with a yellow box
             posture, color = 'unknown', (0,255,255)
 
@@ -164,17 +164,12 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
                         posture, color = 'standing', (0,0,255)
                     
             text = f"{posture} {conf:.2f} ID:{track_id}"
+            cafe_layout.add_person(track_id, (x1, y1), (x2, y2), posture)
         else:
             # chair
             color = (255,0,0)
             text  = f"chair {conf:.2f} ID:{track_id}"
-
-        # Draw & print
-        # cv2.rectangle(frame, (x1,y1), (x2,y2), color, 2)
-        # cv2.putText(frame, text, (x1, y1-10),
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-        # print(f"  → {text}  box=[{x1},{y1},{x2},{y2}]")
-    
+            
     cafe_layout.read_chair_list(chair_boxes)
     #print chair_boxes list length
     print(len(chair_boxes), "chairs detected in this frame")
