@@ -85,7 +85,7 @@ IOU_THRESHOLD = 0.2
 
 # Start the detection + track stream
 stream = det_model.track(
-    source=r'C:\Users\Amitha\uni\git-repos\Seatify\backend\occypancy_detection\HOTWOK-Cam1 - 1.mp4',
+    source=r'top down view.mp4',
     tracker='bytetrack.yaml',
     classes=[0,56, 60],
     persist=True,

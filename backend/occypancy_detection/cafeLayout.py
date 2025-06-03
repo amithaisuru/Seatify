@@ -106,6 +106,7 @@ class CafeLayout:
                 break
     
     def update_databse(self):
+        self.sclae_coordinates(400, 400)  # Scale coordinates to fit in a 800x800 canvas
         layout_data = {
             "chairs": [],
             "tables": []
@@ -138,6 +139,22 @@ class CafeLayout:
         cafe_layut_db_handler = CafeLayoutDbModel()
         cafe_layut_db_handler.update_layout_data(layout_data,3)
 
+    def sclae_coordinates(self, width = 400, height = 400):        
+        #find max x cordinate in chair or table center
+        max_x = max(table.center[0] for table in self.tables + self.chairs)
+        max_y = max(table.center[1] for table in self.tables + self.chairs)
+
+        # calculate scale factor
+        scale_x = width / max_x if max_x > 0 else 1
+        scale_y = height / max_y if max_y > 0 else 1
+
+        # adjust center corrdinates of chairs and table
+        for table in self.tables:
+            table.center = (table.center[0] * scale_x, table.center[1] * scale_y)
+        
+        for chair in self.chairs:
+            chair.center = (chair.center[0] * scale_x, chair.center[1] * scale_y)
+
     def map_people_to_chairs(self):
         print("map people to chairs called")
         for table in self.tables:
@@ -163,7 +180,6 @@ class CafeLayout:
                 else:
                     print(f"Person {person.id} could not be assigned to Chair {chair.id} at Table {table.id}")
                         
-    
     def map_chairs_to_tables(self):
         print("map chair to tables called")
         iou_threshold = 0.25
