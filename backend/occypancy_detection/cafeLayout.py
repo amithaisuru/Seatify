@@ -20,6 +20,16 @@ class CafeLayout:
             bottom_right = (chair[3], chair[4])
             chair_obj = Chair(chair_id, top_left, bottom_right)
             self.add_chair(chair_obj)
+            print(f"Chair {chair_id} added at {top_left} to {bottom_right}")
+    
+    def read_table_list(self, table_list):
+        for table in table_list:
+            table_id = table[0]
+            top_left = (table[1], table[2])
+            bottom_right = (table[3], table[4])
+            table_obj = Table(table_id, top_left, bottom_right)
+            self.add_table(table_obj)
+            print(f"Table {table_id} added at {top_left} to {bottom_right}")
 
     def add_table(self, table):
         self.tables.append(table)
@@ -27,8 +37,11 @@ class CafeLayout:
     def add_chair(self, chair):
         self.chairs.append(chair)
     
-    def add_person(self, person):
+    def add_person(self, id, top_left, bottom_right):
+        person = Person(id, top_left, bottom_right)
         self.people.append(person)
+        print(f"Person {id} added at {top_left} to {bottom_right}")
+        print(len(self.people), "is the count of people")
 
     def get_layout(self):
         layout = {
@@ -63,7 +76,7 @@ class CafeLayout:
 
         root = tk.Tk()
         root.title("Cafe Layout Visualization")
-        canvas = tk.Canvas(root, width=500, height=500, bg="white")
+        canvas = tk.Canvas(root, width=1024, height=720, bg="white")
         canvas.pack(pady=20)
 
         # Draw tables
@@ -75,6 +88,7 @@ class CafeLayout:
 
         # Draw chairs
         for chair in self.chairs:
+            print(f"Drawing chair {chair.id} at {chair.topLeft} to {chair.bottomRight}, occupied: {chair.occupied}")
             x1, y1 = chair.topLeft
             x2, y2 = chair.bottomRight
             fill_color = "green" if chair.occupied else "red"

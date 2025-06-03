@@ -1,11 +1,15 @@
 from cafeObjects import CafeObjects
 
+
 class Person(CafeObjects):
-    def __init__(self, id, topLeft, bottomRight):
+    def __init__(self, id, topLeft, bottomRight, posture = 'unknown'):
         super().__init__(topLeft, bottomRight)
         self.calculate_center()
         self.id = id
-        self.seated = False
+        if posture == 'sitting':
+            self.seated = True
+        else:
+            self.seated = False
     
     def sit_down(self):
         self.seated = True
