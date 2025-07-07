@@ -6,7 +6,7 @@
 //     // style={{ width: `${width}px`, height: `${height}px` }}
 //     style={{ width:`${width}%` , height: `${height}vh` }}
 //     >
-      
+
 //       {/* Render tables */}
 //       {tables.map((table, index) => (
 //         <div
@@ -26,7 +26,7 @@
 //       {chairs.map((chair, index) => (
 //         <div
 //           key={`chair-${index}`}
-//           className={`absolute w-6 h-6 rounded-md text-xs text-white flex items-center justify-center 
+//           className={`absolute w-6 h-6 rounded-md text-xs text-white flex items-center justify-center
 //             ${chair.status === 'occupied' ? 'bg-red-500' : 'bg-green-500'}`}
 //           style={{
 //             left: `${chair.x}px`,
@@ -89,7 +89,7 @@
 //         <div
 //           key={`chair-${index}`}
 //           onClick={() => handleChairClick(index)}
-//           className={`absolute w-6 h-6 rounded-md text-xs text-white cursor-pointer flex items-center justify-center 
+//           className={`absolute w-6 h-6 rounded-md text-xs text-white cursor-pointer flex items-center justify-center
 //             ${chair.status === 'occupied' ? 'bg-red-500' : 'bg-green-500'} hover:opacity-80 transition`}
 //           style={{
 //             left: `${chair.x}px`,
@@ -105,7 +105,6 @@
 // };
 
 // export default CafeLayout;
-
 
 // // _________________________________
 // // component for editing
@@ -153,7 +152,7 @@
 //           <div
 //             key={`chair-${index}`}
 //             onClick={() => handleChairClick(index)}
-//             className={`absolute w-6 h-6 rounded-md text-xs text-white cursor-pointer flex items-center justify-center 
+//             className={`absolute w-6 h-6 rounded-md text-xs text-white cursor-pointer flex items-center justify-center
 //               ${chair.status === 'occupied' ? 'bg-red-500' : 'bg-green-500'} hover:opacity-80 transition`}
 //             style={{ left: `${chair.x}px`, top: `${chair.y}px` }}
 //             title={`Chair ${chair.label} - ${chair.status}`}
@@ -180,18 +179,24 @@
 
 // export default CafeLayout;
 
-import { useEffect,useState } from 'react';
-import { BASE_URL } from '../constants/config';
-import { AuthContext } from '../context/AuthContext';
-import { useContext } from 'react';
+import { useEffect, useState } from "react";
+import { BASE_URL } from "../constants/config";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
-const CafeLayout = ({ tables = [], chairs = [], width = 100,  height = 60, editable= false }) => {
+const CafeLayout = ({
+  tables = [],
+  chairs = [],
+  width = 100,
+  height = 60,
+  editable = false,
+}) => {
   const { token } = useContext(AuthContext);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [localChairs, setLocalChairs] = useState([]);
   const [localTables, setLocalTables] = useState([]);
-    
+
   useEffect(() => {
     setLocalTables(tables);
     setLocalChairs(chairs);
@@ -201,7 +206,10 @@ const CafeLayout = ({ tables = [], chairs = [], width = 100,  height = 60, edita
     setLocalChairs((prev) =>
       prev.map((chair, i) =>
         i === index
-          ? { ...chair, status: chair.status === 'occupied' ? 'available' : 'occupied' }
+          ? {
+              ...chair,
+              status: chair.status === "occupied" ? "available" : "occupied",
+            }
           : chair
       )
     );
@@ -209,46 +217,43 @@ const CafeLayout = ({ tables = [], chairs = [], width = 100,  height = 60, edita
 
   // handle save occupancy setting manually
   const handleSave = async () => {
-    try{
-        const response = await fetch(`${BASE_URL}/cafeLayoutUpdate`, {
-        method: 'POST',
+    try {
+      const response = await fetch(`${BASE_URL}/cafeLayoutUpdate`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-          body: JSON.stringify({
-            tables: localTables,
-            chairs: localChairs,
-          }),
-        });
+        body: JSON.stringify({
+          tables: localTables,
+          chairs: localChairs,
+        }),
+      });
 
       if (response.ok) {
-        setMessage('Layout saved successfully!');
+        setMessage("Layout saved successfully!");
       } else {
         if (data.error === "Token has expired!") {
-          console.error('Token expired. Redirecting to login...');
-          setMessage('Token expired. Please log in again.');
-          delayLogout(); // Call the delayLogout function             
-        } 
-        else if (data.error === "Authorization header is missing!") {
-          console.error('No token found. Redirecting to login...');
-          setMessage('No token found. Please log in again.');
+          console.error("Token expired. Redirecting to login...");
+          setMessage("Token expired. Please log in again.");
           delayLogout(); // Call the delayLogout function
-        }
-        else if (data.error === "Invalid token!") {
-          console.error('Invalid token found. Redirecting to login...');
-          setMessage('Invalid token. Please log in again.');
+        } else if (data.error === "Authorization header is missing!") {
+          console.error("No token found. Redirecting to login...");
+          setMessage("No token found. Please log in again.");
           delayLogout(); // Call the delayLogout function
-        } 
-        else {
+        } else if (data.error === "Invalid token!") {
+          console.error("Invalid token found. Redirecting to login...");
+          setMessage("Invalid token. Please log in again.");
+          delayLogout(); // Call the delayLogout function
+        } else {
           // Handle other errors
-          setMessage('Failed to save layout. Please try again.');
-          console.error('Failed to fetch user profile details:', data.error);
+          setMessage("Failed to save layout. Please try again.");
+          console.error("Failed to fetch user profile details:", data.error);
         }
       }
     } catch (error) {
-      console.error('Save error:', error);
-      setMessage('Server error. Please try again later.');
+      console.error("Save error:", error);
+      setMessage("Server error. Please try again later.");
     } finally {
       setSaving(false);
     }
@@ -276,9 +281,11 @@ const CafeLayout = ({ tables = [], chairs = [], width = 100,  height = 60, edita
         {localChairs.map((chair, index) => (
           <div
             key={`chair-${index}`}
-            onClick={editable? () => handleChairClick(index) : undefined}
+            onClick={editable ? () => handleChairClick(index) : undefined}
             className={`absolute w-6 h-6 rounded-md text-xs text-white cursor-pointer flex items-center justify-center 
-              ${chair.status === 'occupied' ? 'bg-red-500' : 'bg-green-500'} hover:opacity-80 transition`}
+              ${
+                chair.status === "occupied" ? "bg-red-500" : "bg-green-500"
+              } hover:opacity-80 transition`}
             style={{ left: `${chair.x}px`, top: `${chair.y}px` }}
             title={`Chair ${chair.label} - ${chair.status}`}
           >
@@ -290,17 +297,20 @@ const CafeLayout = ({ tables = [], chairs = [], width = 100,  height = 60, edita
       {/* Save Button */}
       {editable && (
         <div className="flex items-center gap-4">
-        <button
-          onClick={handleSave}
-          className="px-4 py-2 bg-primary-dark hover:bg-primary-light text-white rounded-md transition"
-          disabled={saving}
-        >
-          {saving ? 'Saving...' : 'Save Layout'}
-        </button>
-        {message && <p className="text-sm text-gray-700 dark:text-gray-300">{message}</p>}
-      </div>
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-primary-dark hover:bg-primary-light text-white rounded-md transition"
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Save Layout"}
+          </button>
+          {message && (
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {message}
+            </p>
+          )}
+        </div>
       )}
-      
     </div>
   );
 };
