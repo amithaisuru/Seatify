@@ -35,3 +35,15 @@ class CafeLayout(db.Model):
 
     # Define relationship to Cafe model
     cafe = db.relationship('Cafe', backref=db.backref('layouts', lazy=True))
+
+    #update the layout data
+
+    def update_layout_data(self, layout_data):
+        """
+        Update the cafe layout data with new layout information.
+        
+        :param layout_data: JSON data containing the updated layout.
+        """
+        self.cafe_layout_data = layout_data
+        self.updated_at = datetime.utcnow()
+        db.session.commit()
