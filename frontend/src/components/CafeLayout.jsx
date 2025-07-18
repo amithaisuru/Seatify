@@ -190,6 +190,7 @@ const CafeLayout = ({
   width = 100,
   height = 60,
   editable = false,
+  fetchCafeLayout,
 }) => {
   const { token } = useContext(AuthContext);
   const [message, setMessage] = useState("");
@@ -232,6 +233,10 @@ const CafeLayout = ({
 
       if (response.ok) {
         setMessage("Layout saved successfully!");
+        setTimeout(() => {
+          setMessage("");
+          fetchCafeLayout(); // Refresh layout after saving
+        }, 1000);
       } else {
         if (data.error === "Token has expired!") {
           console.error("Token expired. Redirecting to login...");
