@@ -33,6 +33,7 @@ def get_cafes():
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
 
+# Get cafe information by ID
 @cafes_bp.route('/cafes/<int:cafe_id>/info', methods=['GET'])
 @jwt_required()
 def get_cafe_by_id(cafe_id):
