@@ -26,18 +26,13 @@ def get_daily_occupancy_prediction_data():
             return jsonify({"error": "Cafe not found"}), 404
 
         data = [
-            {"time": "JAN", "count": 11},
-            {"time": "FEB", "count": 8},
-            {"time": "MAR", "count": 15},
-            {"time": "APR", "count": 25},
-            {"time": "MAY", "count": 35},
-            {"time": "JUN", "count": 45},
-            {"time": "JUL", "count": 30},
-            {"time": "AUG", "count": 20},
-            {"time": "SEP", "count": 15},
-            {"time": "OCT", "count": 10},
-            {"time": "NOV", "count": 5},
-            {"time": "DEC", "count": 8}
+            {"time": "MON", "count": 11},
+            {"time": "TUE", "count": 8},
+            {"time": "WED", "count": 15},
+            {"time": "THURS", "count": 25},
+            {"time": "FRI", "count": 35},
+            {"time": "SAT", "count": 45},
+            {"time": "SUN", "count": 30},
         ]
         # return jsonify({"daily_prediction_data": data}), 200
         return jsonify(data), 200
