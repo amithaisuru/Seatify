@@ -4,6 +4,7 @@ from extensions import db
 from flask import Blueprint, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import SQLAlchemyError
+from classModels.CafeLayout import CafeLayout
 
 cafes_bp = Blueprint('cafes', __name__)
 
@@ -33,6 +34,7 @@ def get_cafes():
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
 
+# Get cafe information by ID
 @cafes_bp.route('/cafes/<int:cafe_id>/info', methods=['GET'])
 @jwt_required()
 def get_cafe_by_id(cafe_id):
