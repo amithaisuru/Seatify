@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, create_engine
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.mysql import JSON  # Change to MySQL JSON type
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
@@ -16,7 +16,7 @@ DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = quote_plus(os.getenv('DB_PASSWORD') or '')
 DB_HOST = os.getenv('DB_HOST')
 DB_NAME = os.getenv('DB_NAME')
-DATABASE_URI = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
+DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}?charset=utf8mb4'
 
 # Create SQLAlchemy engine and session
 engine = create_engine(DATABASE_URI, echo=False)
@@ -29,8 +29,8 @@ class CafeLayoutDbModel(Base):
 
     id = Column(Integer, primary_key=True)
     cafe_id = Column(Integer, ForeignKey('cafes.id'), nullable=False)
-    model_layout_data = Column(JSONB, nullable=False)
-    cafe_layout_data = Column(JSONB, nullable=True)
+    model_layout_data = Column(JSON, nullable=False)  # Changed from JSONB to JSON
+    cafe_layout_data = Column(JSON, nullable=True)   # Changed from JSONB to JSON
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationship to Cafe model (optional, included for completeness)
