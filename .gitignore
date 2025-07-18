@@ -1,3 +1,16 @@
+/backend/occypancy_detection/__pycache__
+/env
+/backend/occypancy_detection
+/server/api/classModels/__pycache__
+/server/api/__pycache__
+/server/api/routes/authentication/__pycache__
+/server/api/routes/signup/__pycache__
+/server/api/routes/customerHomepage/__pycache__
+/server/api/routes/cafeLayout/__pycache__
+/server/api/routes/adminAddUsers/__pycache__
+/server/api/routes/cafeProfileDetails/__pycache__
+/server/api/routes/customerProfile/__pycache__
+.env
 # Compiled class file
 *.class
 
@@ -26,5 +39,4 @@ replay_pid*
 myenv/
 __pycache__/
 *.pyc
-.env
 *.log
