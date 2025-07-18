@@ -10,6 +10,7 @@ from flask_jwt_extended import get_jwt_identity
 
 Cafe_analytics_dashboard = Blueprint('Cafe_analytics_dashboard', __name__)
 
+# Get daily occupancy prediction data
 @Cafe_analytics_dashboard.route('/analyticsDashboard/dailyOccupancyPrediction', methods=['POST'])
 @jwt_required()
 def get_daily_occupancy_prediction_data():
@@ -47,6 +48,7 @@ def get_daily_occupancy_prediction_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Get hourly occupancy prediction data
 @Cafe_analytics_dashboard.route('/analyticsDashboard/hourlyOccupancyPrediction', methods=['POST'])
 @jwt_required()
 def get_hourly_occupancy_prediction_data():
@@ -85,6 +87,7 @@ def get_hourly_occupancy_prediction_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Get monthly occupancy past data
 @Cafe_analytics_dashboard.route('/analyticsDashboard/monthlyOccupancyPastData', methods=['POST'])
 @jwt_required()
 def get_monthly_occupancy_past_data():
