@@ -1,0 +1,181 @@
+import os
+
+import cv2
+import numpy as np
+from cafeLayout import CafeLayout
+from ultralytics import YOLO
+
+# Create an output folder for annotated frames
+# output_dir = 'annotated_frames/HOTWOK-1-A'
+# os.makedirs(output_dir, exist_ok=True)
+
+# Load models onto GPU
+det_model  = YOLO('yolov8x.pt')
+pose_model = YOLO('yolov8x-pose.pt')
+
+def calculate_angle(a, b, c):
+    #Builds vectors ba and bc around joint b.
+    ba = a - b
+    bc = c - b
+    
+    #Uses the dot-product formula to get the cosine of angle abc
+    cosang = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc) + 1e-6)
+
+    #clip to valid range and convert from radians to degrees
+    return np.degrees(np.arccos(np.clip(cosang, -1.0, 1.0)))
+
+# compute knee angle
+def kneeAngleCondition(kpts):
+    try:
+        # compute left & right knee angles
+        l_ang = calculate_angle(kpts[11,:2], kpts[13,:2], kpts[15,:2]) #computes left knee angles
+        r_ang = calculate_angle(kpts[12,:2], kpts[14,:2], kpts[16,:2]) #computes right knee angles
+        # compute average angle
+        knee_angle = (l_ang + r_ang) / 2
+
+        # Threshold to decide sitting vs standing
+        if knee_angle < 110:
+            return True
+        else:
+            return False
+    except:
+        pass  
+
+#Compute torso lean: angle at the hip by shoulder→hip→knee
+def torsoAngleCondition(kpts):
+    try:
+        left_torso  = calculate_angle(kpts[5,:2],  kpts[11,:2], kpts[13,:2])  # L-shoulder, L-hip, L-knee
+        right_torso = calculate_angle(kpts[6,:2],  kpts[12,:2], kpts[14,:2])  # R-shoulder, R-hip, R-knee
+        torso_angle = (left_torso + right_torso) / 2
+
+        # Threshold to decide sitting vs standing
+        if torso_angle < 110:
+            return True
+        else:
+            return False
+
+    except:
+        pass  
+
+#Hip‐knee level test: True if avg vertical distance between hip & knee is < 15% of crop height
+def hipKneeLevelCondition(kpts, crop_height):
+    try:
+        dy_left  = abs(kpts[11,1] - kpts[13,1])
+        dy_right = abs(kpts[12,1] - kpts[14,1])
+        avg_dy   = (dy_left + dy_right) / 2
+
+        return (avg_dy / crop_height) < 0.15
+    except:
+        return False
+
+def bbox_iou(box1, box2):
+    x1, y1, x2, y2 = box1
+    x1b, y1b, x2b, y2b = box2
+    xi1, yi1 = max(x1, x1b), max(y1, y1b)
+    xi2, yi2 = min(x2, x2b), min(y2, y2b)
+    inter_w = max(0, xi2 - xi1)
+    inter_h = max(0, yi2 - yi1)
+    inter = inter_w * inter_h
+    area1 = (x2 - x1) * (y2 - y1)
+    area2 = (x2b - x1b) * (y2b - y1b)
+    union = area1 + area2 - inter
+    return inter / union if union > 0 else 0
+
+IOU_THRESHOLD = 0.2
+
+# Start the detection + track stream
+stream = det_model.track(
+    source=r'top down view.mp4',
+    tracker='bytetrack.yaml',
+    classes=[0,56, 60],
+    persist=True,
+    show=False,
+    save=True,
+    save_dir='outputs/',
+    stream=True
+)
+
+#process frames
+for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (frame_idx, res) as soon as each frame is done
+    cafe_layout = CafeLayout()
+    frame = singleFrame.orig_img.copy() # copy of raw frame we annotate
+    print(f"Frame {frameIndex}:")
+
+    # Pull detections
+    # Unpack the tracked detections in parallel arrays
+    boxesXYXYs = singleFrame.boxes.xyxy.cpu().numpy() # bounding boxes (n×4)
+    confs     = singleFrame.boxes.conf.cpu().numpy() # confidence scores (n) 
+    cls_ids   = singleFrame.boxes.cls.cpu().numpy().astype(int) # class IDs (n)
+    track_ids = singleFrame.boxes.id.cpu().numpy().astype(int) # track IDs (n)
+
+    # Build a list of chairs this frame
+    chair_boxes = []
+    for (x1,y1,x2,y2), cls_id, track_id in zip(boxesXYXYs, cls_ids, track_ids):
+        if singleFrame.names[cls_id] == 'chair':
+            chairBoundingBox = list(map(int, (track_id, x1,y1,x2,y2)))
+            chair_boxes.append(chairBoundingBox)
+    
+    table_boxes = []
+    for (x1,y1,x2,y2), cls_id, track_id in zip(boxesXYXYs, cls_ids, track_ids):
+        if singleFrame.names[cls_id] == 'dining table':
+            tableBoundingBox = list(map(int, (track_id, x1,y1,x2,y2)))
+            table_boxes.append(tableBoundingBox)
+
+    # print(f"  → Found {len(chair_boxes)} chairs in this frame")
+    # print(f"  → Found {len(boxesXYXYs)} total detections in this frame")
+    #Iterate through each detection in this frame
+    for (x1, y1, x2, y2), conf, cls_id, track_id in zip(boxesXYXYs, confs, cls_ids, track_ids): #Zips the four arrays so you handle each detection in lockstep.
+        #Converts the box coords to integers
+        x1, y1, x2, y2 = map(int, (x1, y1, x2, y2))
+
+        #looks up the human-readable class name
+        label = singleFrame.names[cls_id] # e.g. "person" or "chair"
+
+        # Person branch
+        if label == 'person':
+            print("person detected")
+            # Defaults the posture to “unknown” with a yellow box
+            posture, color = 'unknown', (0,255,255)
+
+            # Crops the detected person region and runs pose_model on that ROI
+            roi = frame[y1:y2, x1:x2]
+            p = pose_model(roi)[0]
+
+            if p.keypoints is not None:
+                # Extract the raw (n,17,3) tensor of keypoints
+                kpts_np = p.keypoints.data.cpu().numpy()  # shape (n,17,3)
+
+                # Ensure we have at least 17 keypoints
+                if kpts_np.ndim == 3 and kpts_np.shape[1] >= 17:
+                    kpts = kpts_np[0]  # first person
+                    # shape (17,3): [x,y,conf] per joint
+
+                    # Compute the knee angle
+                    kneeAngleResult = kneeAngleCondition(kpts)
+
+                    # Compute the torso angle
+                    torsoAngleResult = torsoAngleCondition(kpts)
+
+                    # Compute the hip-knee level condition
+                    hipKneeLevelResult = hipKneeLevelCondition(kpts, crop_height=(y2-y1))
+                    if kneeAngleResult or torsoAngleResult:
+                        posture, color = 'sitting',  (0,255,0)
+                    else:
+                        posture, color = 'standing', (0,0,255)
+                    
+            text = f"{posture} {conf:.2f} ID:{track_id}"
+            cafe_layout.add_person(track_id, (x1, y1), (x2, y2), posture)
+        else:
+            # chair
+            color = (255,0,0)
+            text  = f"chair {conf:.2f} ID:{track_id}"
+            
+    cafe_layout.read_chair_list(chair_boxes)
+    #print chair_boxes list length
+    print(len(chair_boxes), "chairs detected in this frame")
+    cafe_layout.read_table_list(table_boxes)
+    print(len(table_boxes), "tables detected in this frame")
+    #cafe_layout.show_graphical_layout()
+    cafe_layout.map_chairs_to_tables()
+    cafe_layout.map_people_to_chairs()
+    cafe_layout.update_databse()

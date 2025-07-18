@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify
-from extensions import db
 from classModels.Cafe import Cafe
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from classModels.CafeLayout import CafeLayout
+from extensions import db
+from flask import Blueprint, jsonify
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from classModels.CafeLayout import CafeLayout
 
