@@ -95,18 +95,55 @@ def get_seats_by_cafe_id(cafe_id):
         tables=[]
         chairs=[]
 
+        # Fetch layout from the database
         layout = CafeLayout.query.filter_by(cafe_id=cafe.id).first()
         if layout:
-            # If a layout exists, use the stored layout data
-            tables = layout.model_layout_data.get('tables', [])
-            chairs = layout.model_layout_data.get('chairs', [])
+            # Debug: Print timestamp values
+            print(f"cafe_layout_updated_at: {layout.cafe_layout_updated_at}")
+            print(f"model_layout_updated_at: {layout.model_layout_updated_at}")
+            
+            if layout.cafe_layout_data and layout.model_layout_data:
+                # Compare timestamps and take the latest one
+                # Handle case where timestamps might be None
+                cafe_timestamp = layout.cafe_layout_updated_at
+                model_timestamp = layout.model_layout_updated_at
+                
+                if cafe_timestamp and model_timestamp:
+                    # Both timestamps exist, compare them
+                    if cafe_timestamp < model_timestamp:
+                        print("Using cafe_layout_data (newer)")
+                        tables = layout.cafe_layout_data.get('tables', [])
+                        chairs = layout.cafe_layout_data.get('chairs', [])
+                    else:
+                        print("Using model_layout_data (newer)")
+                        tables = layout.model_layout_data.get('tables', [])
+                        chairs = layout.model_layout_data.get('chairs', [])
+                elif cafe_timestamp:
+                    # Only cafe timestamp exists
+                    print("Using cafe_layout_data (only cafe timestamp exists)")
+                    tables = layout.cafe_layout_data.get('tables', [])
+                    chairs = layout.cafe_layout_data.get('chairs', [])
+                elif model_timestamp:
+                    # Only model timestamp exists
+                    print("Using model_layout_data (only model timestamp exists)")
+                    tables = layout.model_layout_data.get('tables', [])
+                    chairs = layout.model_layout_data.get('chairs', [])
+                else:
+                    # No timestamps, default to cafe_layout_data
+                    print("Using cafe_layout_data (no timestamps)")
+                    tables = layout.cafe_layout_data.get('tables', [])
+                    chairs = layout.cafe_layout_data.get('chairs', [])
+            elif layout.cafe_layout_data:
+                print("Using cafe_layout_data (only cafe data exists)")
+                tables = layout.cafe_layout_data.get('tables', [])
+                chairs = layout.cafe_layout_data.get('chairs', [])
+            elif layout.model_layout_data:
+                print("Using model_layout_data (only model data exists)")
+                tables = layout.model_layout_data.get('tables', [])
+                chairs = layout.model_layout_data.get('chairs', [])
+                
         else:
-            # If no layout exists, return an empty layout
-            tables = []
-            chairs = []
-        
-        print("Tables:", tables)
-        print("Chairs:", chairs)
+            return jsonify({"error": "Layout not found"}), 404
 
         return jsonify({
                     "cafe_id": cafe_id,
