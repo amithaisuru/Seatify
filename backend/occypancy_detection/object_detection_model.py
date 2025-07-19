@@ -5,10 +5,6 @@ import numpy as np
 from cafeLayout import CafeLayout
 from ultralytics import YOLO
 
-# Create an output folder for annotated frames
-# output_dir = 'annotated_frames/HOTWOK-1-A'
-# os.makedirs(output_dir, exist_ok=True)
-
 # Load models onto GPU
 det_model  = YOLO('yolov8x.pt')
 pose_model = YOLO('yolov8x-pose.pt')
@@ -80,6 +76,22 @@ def bbox_iou(box1, box2):
     area2 = (x2b - x1b) * (y2b - y1b)
     union = area1 + area2 - inter
     return inter / union if union > 0 else 0
+
+def is_sitting(knee_angle, torso_angle, hip_knee_level):
+    """
+    Determine if a person is sitting based on the conditions.
+    weightd average of the conditions to determine sitting posture.
+    """
+    # Define weights for each condition
+    knee_weight = 0.4
+    torso_weight = 0.4
+    hip_knee_weight = 0.2
+
+    # Calculate the weighted average
+    score = (knee_angle * knee_weight + torso_angle * torso_weight + hip_knee_level * hip_knee_weight)
+
+    # Threshold to decide sitting vs standing
+    return score > 0.5
 
 IOU_THRESHOLD = 0.2
 
@@ -158,7 +170,8 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
 
                     # Compute the hip-knee level condition
                     hipKneeLevelResult = hipKneeLevelCondition(kpts, crop_height=(y2-y1))
-                    if kneeAngleResult or torsoAngleResult:
+                    
+                    if is_sitting(kneeAngleResult, torsoAngleResult, hipKneeLevelResult):
                         posture, color = 'sitting',  (0,255,0)
                     else:
                         posture, color = 'standing', (0,0,255)
