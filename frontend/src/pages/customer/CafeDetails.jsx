@@ -198,17 +198,12 @@ function CafeDetails() {
                   <strong>Contact:</strong> {cafe.contact_number}
                 </p>
 
-                <div className="text-md mb-2 flex items-center gap-2">
-                  <Map className="w-4 h-4 text-gray-500" />
-                  <strong>Location:</strong>
-                  <a
-                    href="https://maps.app.goo.gl/AeTTSMCdTX4oAMxq5"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline ml-1"
-                  >
-                    Google Map
-                  </a>
+                <div className="text-md mb-2 flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Map className="w-4 h-4 text-gray-500" />
+                    <strong>Location:</strong>
+                    <span className="ml-1">{cafe.location?.name}</span>
+                  </div>
                 </div>
 
                 <p className="text-md mb-2 flex items-center gap-2">
@@ -217,13 +212,29 @@ function CafeDetails() {
                 </p>
               </div>
 
-              {/* Right Side: Image */}
-              <div className="w-full md:w-[300px] h-[200px] flex-shrink-0">
+              {/* Right Side: Image & Map Responsive */}
+              <div className="w-full md:w-[600px] flex flex-col md:flex-row gap-4 flex-shrink-0 items-start">
                 <img
                   src={cafeImage} // make sure this is a full URL or correct import
                   alt="Cafe"
-                  className="w-full h-full object-cover rounded-md shadow-md"
+                  className="w-full md:w-[280px] h-[180px] object-cover rounded-md shadow-md"
                 />
+                <div className="rounded-md overflow-hidden shadow-md w-full md:w-[300px] h-[180px]">
+                  <iframe
+                    title="Cafe Location Map"
+                    width="100%"
+                    height="180"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps?q=${
+                      cafe.location?.latitude || 6.9271
+                    },${
+                      cafe.location?.longitude || 79.8612
+                    }&hl=es;z=14&output=embed`}
+                  ></iframe>
+                </div>
               </div>
             </div>
           </div>
