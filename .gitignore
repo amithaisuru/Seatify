@@ -39,3 +39,6 @@ myenv/
 __pycache__/
 *.pyc
 *.log
+*.pt
+*.mp4
+*.avi
