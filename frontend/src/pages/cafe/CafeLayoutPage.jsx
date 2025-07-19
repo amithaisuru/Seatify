@@ -73,15 +73,15 @@ function CafeLayoutPage() {
 
   return (
     <>
-      <div className="p-6 bg-gray-50 min-h-screen dark:bg-gray-900">
-        <main className="grow">
-          <div className="mb-4 sm:mb-0">
-            <h1 className="mb-6 text-sm md:text-xl text-primary-light dark:text-primary-dark font-bold">
+      <div className="p-4 sm:p-6 bg-gray-50 min-h-screen dark:bg-gray-900">
+        <main className="flex-1">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="mb-6 text-lg sm:text-xl md:text-2xl text-primary-light dark:text-primary-dark font-bold">
               Cafe Layout
             </h1>
           </div>
-          <div className="bg-gray-200 dark:bg-gray-800 rounded-md p-4">
-            <div className="w-full max-w-[100%] overflow-auto">
+          <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
+            <div className="w-full">
               <CafeLayout
                 tables={tables}
                 chairs={chairs}

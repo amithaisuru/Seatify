@@ -179,7 +179,7 @@
 
 // export default CafeLayout;
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BASE_URL } from "../constants/config";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -197,11 +197,54 @@ const CafeLayout = ({
   const [saving, setSaving] = useState(false);
   const [localChairs, setLocalChairs] = useState([]);
   const [localTables, setLocalTables] = useState([]);
+  const layoutRef = useRef(null);
+  const [layoutDimensions, setLayoutDimensions] = useState({
+    width: 800,
+    height: 600,
+  });
 
   useEffect(() => {
     setLocalTables(tables);
     setLocalChairs(chairs);
   }, [tables, chairs]);
+
+  // Handle responsive layout dimensions
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (layoutRef.current) {
+        const rect = layoutRef.current.getBoundingClientRect();
+        setLayoutDimensions({
+          width: rect.width,
+          height: rect.height,
+        });
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
+
+  // Calculate responsive positions and sizes
+  const getResponsivePosition = (
+    x,
+    y,
+    originalWidth = 800,
+    originalHeight = 600
+  ) => {
+    const scaleX = layoutDimensions.width / originalWidth;
+    const scaleY = layoutDimensions.height / originalHeight;
+
+    return {
+      left: `${x * scaleX}px`,
+      top: `${y * scaleY}px`,
+    };
+  };
+
+  const getResponsiveSize = (size, originalWidth = 800) => {
+    const scale = layoutDimensions.width / originalWidth;
+    return Math.max(size * scale, size * 0.5); // Minimum 50% of original size
+  };
 
   const handleChairClick = (index) => {
     setLocalChairs((prev) =>
@@ -267,36 +310,69 @@ const CafeLayout = ({
   return (
     <div className="space-y-4">
       <div
-        className="relative border bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800"
-        style={{ width: `${width}%`, height: `${height}vh` }}
+        ref={layoutRef}
+        className="relative border bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800 w-full"
+        style={{
+          minHeight: "300px",
+          height: "clamp(300px, 50vh, 600px)",
+          aspectRatio: "4/3",
+        }}
       >
         {/* Tables */}
-        {localTables.map((table, index) => (
-          <div
-            key={`table-${index}`}
-            className="absolute w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm"
-            style={{ left: `${table.x}px`, top: `${table.y}px` }}
-            title={`Table ${table.label}`}
-          >
-            {table.label}
-          </div>
-        ))}
+        {localTables.map((table, index) => {
+          const tableSize = getResponsiveSize(64); // 64px = w-16 h-16
+          const position = getResponsivePosition(table.x, table.y);
+
+          return (
+            <div
+              key={`table-${index}`}
+              className="absolute bg-gray-700 rounded-full flex items-center justify-center text-white font-semibold"
+              style={{
+                ...position,
+                width: `${tableSize}px`,
+                height: `${tableSize}px`,
+                fontSize: `${Math.max(tableSize / 5, 10)}px`,
+              }}
+              title={`Table ${table.label}`}
+            >
+              {table.label}
+            </div>
+          );
+        })}
 
         {/* Chairs */}
-        {localChairs.map((chair, index) => (
-          <div
-            key={`chair-${index}`}
-            onClick={editable ? () => handleChairClick(index) : undefined}
-            className={`absolute w-6 h-6 rounded-md text-xs text-white cursor-pointer flex items-center justify-center 
-              ${
-                chair.status === "occupied" ? "bg-red-500" : "bg-green-500"
-              } hover:opacity-80 transition`}
-            style={{ left: `${chair.x}px`, top: `${chair.y}px` }}
-            title={`Chair ${chair.label} - ${chair.status}`}
-          >
-            {chair.label}
-          </div>
-        ))}
+        {localChairs.map((chair, index) => {
+          const chairSize = getResponsiveSize(24); // 24px = w-6 h-6
+          const position = getResponsivePosition(chair.x, chair.y);
+
+          return (
+            <div
+              key={`chair-${index}`}
+              onClick={editable ? () => handleChairClick(index) : undefined}
+              className={`absolute rounded-md text-white flex items-center justify-center font-medium transition-all duration-200
+                ${
+                  chair.status === "occupied"
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-green-500 hover:bg-green-600"
+                } 
+                ${
+                  editable
+                    ? "cursor-pointer hover:scale-110 hover:shadow-lg"
+                    : "cursor-default"
+                }
+                hover:opacity-90`}
+              style={{
+                ...position,
+                width: `${chairSize}px`,
+                height: `${chairSize}px`,
+                fontSize: `${Math.max(chairSize / 3, 8)}px`,
+              }}
+              title={`Chair ${chair.label} - ${chair.status}`}
+            >
+              {chair.label}
+            </div>
+          );
+        })}
       </div>
 
       {/* Save Button */}
