@@ -44,3 +44,4 @@ __pycache__/
 *.avi
 *.json
 frontend/package-lock.json
+*.jpg
