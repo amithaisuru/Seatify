@@ -3,6 +3,7 @@ import { BASE_URL } from "../../constants/config";
 import Toast from "../../components/Toast";
 import { AuthContext } from "../../context/AuthContext";
 import CafeLayout from "../../components/CafeLayout";
+import NewCafeLayout from "../../components/NewCafeLayout";
 
 function CafeLayoutPage() {
   const { token } = useContext(AuthContext);
@@ -21,8 +22,9 @@ function CafeLayoutPage() {
       });
       if (response.ok) {
         const data = await response.json();
+
         setTables(data.tables);
-        setChairs(data.chairs);
+        // setChairs(data.chairs);
       } else {
         if (data.error === "Token has expired!") {
           console.error("Token expired. Redirecting to login...");
@@ -82,12 +84,13 @@ function CafeLayoutPage() {
           </div>
           <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
             <div className="w-full">
-              <CafeLayout
+              {/* <CafeLayout
                 tables={tables}
                 chairs={chairs}
                 editable={true}
                 fetchCafeLayout={fetchCafeLayout}
-              />
+              /> */}
+              <NewCafeLayout tables={tables} />
             </div>
           </div>
         </main>
