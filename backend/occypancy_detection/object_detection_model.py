@@ -185,8 +185,9 @@ while cap.isOpened():
     print(len(chair_boxes), "chairs detected in this frame")
     cafe_layout.read_table_list(table_boxes)
     print(len(table_boxes), "tables detected in this frame")
-    cafe_layout.map_chairs_to_tables()
-    cafe_layout.map_people_to_chairs()
+    cafe_layout.map_chairs_to_tables_by_distance()
+    cafe_layout.map_people_to_tables_by_distance()
+    cafe_layout.analyze_occupancy()
     cafe_layout.update_databse()
 
     frameIndex += 1
