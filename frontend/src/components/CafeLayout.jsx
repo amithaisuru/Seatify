@@ -71,7 +71,12 @@ const CafeLayout = ({
         i === index
           ? {
               ...chair,
-              status: chair.status === "occupied" ? "available" : "reserved",
+              status:
+                chair.status === "occupied" || chair.status === "reserved"
+                  ? chair.status === "occupied"
+                    ? "available"
+                    : "occupied"
+                  : "reserved",
             }
           : chair
       )
