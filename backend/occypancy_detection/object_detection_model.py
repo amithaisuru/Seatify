@@ -20,6 +20,19 @@ def calculate_angle(a, b, c):
     #clip to valid range and convert from radians to degrees
     return np.degrees(np.arccos(np.clip(cosang, -1.0, 1.0)))
 
+# General angle scoring function
+def score_within_range(value, lower_bound, upper_bound):
+    """
+    Returns a normalized score between 0 and 1 depending on how close
+    the value is within the [lower_bound, upper_bound] range.
+    """
+    if value <= lower_bound:
+        return 0.0
+    elif value >= upper_bound:
+        return 1.0
+    else:
+        return (value - lower_bound) / (upper_bound - lower_bound)
+
 # compute knee angle
 def kneeAngleCondition(kpts):
     try:
@@ -28,14 +41,9 @@ def kneeAngleCondition(kpts):
         r_ang = calculate_angle(kpts[12,:2], kpts[14,:2], kpts[16,:2]) #computes right knee angles
         # compute average angle
         knee_angle = (l_ang + r_ang) / 2
-
-        # Threshold to decide sitting vs standing
-        if knee_angle < 110:
-            return True
-        else:
-            return False
+        return score_within_range(knee_angle, 70, 120)  # Normalized score between 0 and 1
     except:
-        pass  
+        return 0.0  
 
 #Compute torso lean: angle at the hip by shoulder→hip→knee
 def torsoAngleCondition(kpts):
@@ -44,25 +52,23 @@ def torsoAngleCondition(kpts):
         right_torso = calculate_angle(kpts[6,:2],  kpts[12,:2], kpts[14,:2])  # R-shoulder, R-hip, R-knee
         torso_angle = (left_torso + right_torso) / 2
 
-        # Threshold to decide sitting vs standing
-        if torso_angle < 110:
-            return True
-        else:
-            return False
+        return score_within_range(torso_angle, 60, 120)
 
     except:
-        pass  
+        return 0.0  
 
 #Hip‐knee level test: True if avg vertical distance between hip & knee is < 15% of crop height
 def hipKneeLevelCondition(kpts, crop_height):
+    max_ratio = 0.15  # Maximum allowed ratio of hip-knee distance to crop height
     try:
         dy_left  = abs(kpts[11,1] - kpts[13,1])
         dy_right = abs(kpts[12,1] - kpts[14,1])
         avg_dy   = (dy_left + dy_right) / 2
-
-        return (avg_dy / crop_height) < 0.15
+        ratio = avg_dy / crop_height
+        score = 1.0 - min(ratio / max_ratio, 1.0)
+        return score
     except:
-        return False
+        return 0.0
 
 def bbox_iou(box1, box2):
     x1, y1, x2, y2 = box1
@@ -91,13 +97,13 @@ def is_sitting(knee_angle, torso_angle, hip_knee_level):
     score = (knee_angle * knee_weight + torso_angle * torso_weight + hip_knee_level * hip_knee_weight)
 
     # Threshold to decide sitting vs standing
-    return score > 0.5
+    return score >= 0.7
 
 IOU_THRESHOLD = 0.2
 
 # Start the detection + track stream
 stream = det_model.track(
-    source=r'top down view.mp4',
+    source=r'HOTWOK -2-A.mp4',
     tracker='bytetrack.yaml',
     classes=[0,56, 60],
     persist=True,

@@ -43,3 +43,4 @@ __pycache__/
 *.mp4
 *.avi
 *.json
+frontend/package-lock.json
