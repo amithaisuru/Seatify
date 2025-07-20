@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from "react";
+import React from "react";
 import { BASE_URL } from "../constants/config";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 
 const NewCafeLayout = ({
+  tables,
   width = 100,
   height = 60,
   editable = false,
@@ -12,28 +14,28 @@ const NewCafeLayout = ({
   const { token } = useContext(AuthContext);
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
-  // Hardcoded tables data
-  const hardcodedTables = [
-    {
-      x: 53.54457572502685,
-      y: 358.9129892794814,
-      table_id: "T1",
-      chair_count: 5,
-      seated_persons_count: 2,
-      assigned_chairs_IDs: [1, 2, 3, 6, 7],
-      assigned_people_IDs: [4, 5],
-    },
-    {
-      x: 253.54457572502685,
-      y: 258.9129892794814,
-      table_id: "T12",
-      chair_count: 6,
-      seated_persons_count: 2,
-      assigned_chairs_IDs: [8, 9, 12, 13, 14],
-      assigned_people_IDs: [10, 11],
-    },
-  ];
-  const [localTables, setLocalTables] = useState(hardcodedTables);
+
+  //   Hardcoded tables data
+  //   const tables = [
+  //     {
+  //       x: 53.54457572502685,
+  //       y: 358.9129892794814,
+  //       table_id: "T1",
+  //       chair_count: 5,
+  //       seated_persons_count: 2,
+  //       assigned_chairs_IDs: [1, 2, 3, 6, 7],
+  //       assigned_people_IDs: [4, 5],
+  //     },
+  //     {
+  //       x: 253.54457572502685,
+  //       y: 258.9129892794814,
+  //       table_id: "T12",
+  //       chair_count: 6,
+  //       seated_persons_count: 2,
+  //       assigned_chairs_IDs: [8, 9, 12, 13, 14],
+  //       assigned_people_IDs: [10, 11],
+  //     },
+  //   ];
   // Use fixed positions and sizes
   const getFixedPosition = (x, y) => ({ left: `${x}px`, top: `${y}px` });
   const getFixedSize = (size) => size;
@@ -77,13 +79,13 @@ const NewCafeLayout = ({
         }}
       >
         {/* Tables */}
-        {localTables.map((table, tableIndex) => {
+        {tables.map((table, tableIndex) => {
           const tableSize = getFixedSize(48);
           const position = getFixedPosition(table.x, table.y);
           // Generate chairs for this table
           const chairs = generateChairsForTable(table, tableIndex);
           return (
-            <>
+            <React.Fragment key={`table-group-${tableIndex}`}>
               {/* Chairs for this table */}
               {chairs.map((chair, chairIndex) => {
                 const chairSize = getFixedSize(24);
@@ -125,7 +127,7 @@ const NewCafeLayout = ({
               >
                 {table.table_id}
               </div>
-            </>
+            </React.Fragment>
           );
         })}
       </div>
