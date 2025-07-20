@@ -45,3 +45,4 @@ __pycache__/
 *.json
 frontend/package-lock.json
 *.jpg
+frontend/package-lock.json
