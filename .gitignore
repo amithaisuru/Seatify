@@ -46,3 +46,4 @@ __pycache__/
 frontend/package-lock.json
 *.jpg
 frontend/package-lock.json
+*.json
