@@ -89,15 +89,15 @@ def is_sitting(knee_angle, torso_angle, hip_knee_level):
     weightd average of the conditions to determine sitting posture.
     """
     # Define weights for each condition
-    knee_weight = 0.4
-    torso_weight = 0.4
-    hip_knee_weight = 0.2
+    knee_weight = 0.3
+    torso_weight = 0.6
+    hip_knee_weight = 0.1
 
     # Calculate the weighted average
     score = (knee_angle * knee_weight + torso_angle * torso_weight + hip_knee_level * hip_knee_weight)
 
     # Threshold to decide sitting vs standing
-    return score >= 0.7
+    return score > 0.5  # Adjust threshold as needed
 
 IOU_THRESHOLD = 0.2
 
@@ -115,9 +115,12 @@ stream = det_model.track(
 
 #process frames
 for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (frame_idx, res) as soon as each frame is done
+    #skip 20 frames each iteration
+    if frameIndex % 30 != 0:
+        continue
     cafe_layout = CafeLayout()
     frame = singleFrame.orig_img.copy() # copy of raw frame we annotate
-    print(f"Frame {frameIndex}:")
+    print(f"Frame_amitha {frameIndex}:")
 
     # Pull detections
     # Unpack the tracked detections in parallel arrays
@@ -179,8 +182,10 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
                     
                     if is_sitting(kneeAngleResult, torsoAngleResult, hipKneeLevelResult):
                         posture, color = 'sitting',  (0,255,0)
+                        print("Person is sitting")
                     else:
                         posture, color = 'standing', (0,0,255)
+                        print("Person is standing")
                     
             text = f"{posture} {conf:.2f} ID:{track_id}"
             cafe_layout.add_person(track_id, (x1, y1), (x2, y2), posture)
@@ -188,7 +193,20 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
             # chair
             color = (255,0,0)
             text  = f"chair {conf:.2f} ID:{track_id}"
-            
+
+    # Draw the person bounding boxes on the frame and show each frame realtime (blue for standing, green for sitting)
+    for people in cafe_layout.people:
+        x1, y1 = people.top_left
+        x2, y2 = people.bottom_right
+        color1 = (0, 255, 0) if people.is_sitting else (0, 0, 255)
+        text = f"{people.is_sitting} ID:{people.id}"
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color1, 2)
+        cv2.putText(frame, text, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color1, 2)
+    #store annotded frame in a folder called "annotated+frames"
+    annotated_frame_path = os.path.join('annotated_frames', f'frame_{frameIndex}.jpg')
+    cv2.imwrite(annotated_frame_path, frame)
+        
+
     cafe_layout.read_chair_list(chair_boxes)
     #print chair_boxes list length
     print(len(chair_boxes), "chairs detected in this frame")
