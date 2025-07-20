@@ -164,7 +164,7 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
                 kpts_np = p.keypoints.data.cpu().numpy()  # shape (n,17,3)
 
                 # Ensure we have at least 17 keypoints
-                if kpts_np.ndim == 3 and kpts_np.shape[1] >= 17:
+                if kpts_np.ndim == 3 and kpts_np.shape[0]>0 and kpts_np.shape[1] >= 17:
                     kpts = kpts_np[0]  # first person
                     # shape (17,3): [x,y,conf] per joint
 
