@@ -71,7 +71,12 @@ const CafeLayout = ({
         i === index
           ? {
               ...chair,
-              status: chair.status === "occupied" ? "available" : "occupied",
+              status:
+                chair.status === "occupied" || chair.status === "reserved"
+                  ? chair.status === "occupied"
+                    ? "available"
+                    : "occupied"
+                  : "reserved",
             }
           : chair
       )
@@ -170,9 +175,11 @@ const CafeLayout = ({
               onClick={editable ? () => handleChairClick(index) : undefined}
               className={`absolute rounded-md text-white flex items-center justify-center font-medium transition-all duration-200
                 ${
-                  chair.status === "occupied"
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-green-500 hover:bg-green-600"
+                  chair.status === "occupied" || chair.status === "available"
+                    ? chair.status === "occupied"
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-green-500 hover:bg-green-600"
+                    : "bg-blue-500 hover:bg-blue-600"
                 } 
                 ${
                   editable
@@ -209,6 +216,19 @@ const CafeLayout = ({
               {message}
             </p>
           )}
+          {/* display colors and meaning */}
+          <div className="flex items-center gap-2">
+            <div className="w-4 rounded-sm h-4 bg-red-500" />
+            <span>Occupied Chair</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 rounded-sm h-4 bg-green-500" />
+            <span>Available Chair</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 rounded-sm h-4 bg-blue-500" />
+            <span>Reserved Chair</span>
+          </div>
         </div>
       )}
     </div>

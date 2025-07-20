@@ -280,13 +280,29 @@ function CafeDetails() {
             <CafeLayout tables={tables} chairs={chairs} />
           </div>
           {/* Call to Make a Reservation Button */}
-          <a
-            // href={`tel:${cafe.contact_number}`}
-            className="inline-block mt-2 px-4 py-2 bg-primary-dark text-white rounded shadow hover:bg-primary-light transition-colors duration-200"
-            style={{ textDecoration: "none" }}
-          >
-            Call to Make a Reservation
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              // href={`tel:${cafe.contact_number}`}
+              className="inline-block mt-2 px-4 py-2 bg-primary-dark text-white rounded shadow hover:bg-primary-light transition-colors duration-200"
+              style={{ textDecoration: "none" }}
+            >
+              Call to Make a Reservation
+            </a>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 rounded-sm h-4 bg-red-500" />
+                <span>Occupied Chair</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 rounded-sm h-4 bg-green-500" />
+                <span>Available Chair</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 rounded-sm h-4 bg-blue-500" />
+                <span>Reserved Chair</span>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
       {toast.show && (
