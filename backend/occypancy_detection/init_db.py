@@ -32,6 +32,8 @@ class CafeLayoutDbModel(Base):
     model_layout_data = Column(JSON, nullable=False)  # Changed from JSONB to JSON
     cafe_layout_data = Column(JSON, nullable=True)   # Changed from JSONB to JSON
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    model_layout_updated_at = Column(DateTime, default=datetime.utcnow)
+    cafe_layout_updated_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship to Cafe model (optional, included for completeness)
     cafe = relationship('Cafe', backref='layouts')
