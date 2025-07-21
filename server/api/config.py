@@ -3,7 +3,9 @@ from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env file from parent directory (server folder)
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+load_dotenv(env_path)
 
 class Config:
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')

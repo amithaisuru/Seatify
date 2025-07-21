@@ -85,7 +85,7 @@ IOU_THRESHOLD = 0.2
 
 # Start the detection + track stream
 stream = det_model.track(
-    source=r'top down view.mp4',
+    source=r'/Users/sadeepa/Desktop/Self Study/Seatify/Input Videos/video2.mp4',
     tracker='bytetrack.yaml',
     classes=[0,56, 60],
     persist=True,
@@ -146,7 +146,7 @@ for frameIndex, singleFrame in enumerate(stream): #enumerate(stream) gives (fram
                 kpts_np = p.keypoints.data.cpu().numpy()  # shape (n,17,3)
 
                 # Ensure we have at least 17 keypoints
-                if kpts_np.ndim == 3 and kpts_np.shape[1] >= 17:
+                if kpts_np.ndim == 3 and kpts_np.shape[0] > 0 and kpts_np.shape[1] >= 17:
                     kpts = kpts_np[0]  # first person
                     # shape (17,3): [x,y,conf] per joint
 
