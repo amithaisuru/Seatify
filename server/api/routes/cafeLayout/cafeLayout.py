@@ -117,33 +117,6 @@ def get_cafeLayout():
         if not cafe:
             return jsonify({"error": "Cafe not found"}), 404
         tables = []
-        # tables1=        [{
-        #     "x": 53.54457572502685,
-        #     "y": 358.9129892794814,
-        #     "table_id": "T1",
-        #     "chair_count": 5,
-        #     "seated_persons_count": 2,
-        #     "assigned_chairs_IDs": [1, 2, 3, 6, 7],
-        #     "assigned_people_IDs": [4, 5],
-        # },
-        # {
-        #     "x": 253.54457572502685,
-        #     "y": 258.9129892794814,
-        #     "table_id": "T12",
-        #     "chair_count": 6,
-        #     "seated_persons_count": 2,
-        #     "assigned_chairs_IDs": [8, 9, 12, 13, 14],
-        #     "assigned_people_IDs": [10, 11],
-        # },
-        # {
-        #     "x": 453.54457572502685,
-        #     "y": 158.9129892794814,
-        #     "table_id": "T2",
-        #     "chair_count": 4,
-        #     "seated_persons_count": 1,
-        #     "assigned_chairs_IDs": [41, 51, 101, 61],
-        #     "assigned_people_IDs": [42, 19],
-        # }]
         
         # Fetch layout from the database
         layout = CafeLayout.query.filter_by(cafe_id=cafe.id).first()
@@ -161,19 +134,27 @@ def get_cafeLayout():
                 if cafe_timestamp and model_timestamp:
                     # Both timestamps exist, compare them
                     if cafe_timestamp < model_timestamp:
+                        print("Using model_layout_data (newer) with cafe status updates")
+                        tables = layout.model_layout_data.get('tables', [])
+                        # Update table statuses from cafe_layout_data
+                        cafe_tables = layout.cafe_layout_data.get('tables', [])
+                        tables = update_table_statuses(tables, cafe_tables)
+                    else:
                         print("Using cafe_layout_data (newer)")
                         tables = layout.cafe_layout_data.get('tables', [])
-                    else:
-                        print("Using model_layout_data (newer)")
-                        tables = layout.model_layout_data.get('tables', [])
+                        
                 elif cafe_timestamp:
                     # Only cafe timestamp exists
                     print("Using cafe_layout_data (only cafe timestamp exists)")
                     tables = layout.cafe_layout_data.get('tables', [])
                 elif model_timestamp:
                     # Only model timestamp exists
-                    print("Using model_layout_data (only model timestamp exists)")
+                    print("Using model_layout_data (only model timestamp exists) with default status")
                     tables = layout.model_layout_data.get('tables', [])
+                    # Set default status for all tables since no cafe data exists
+                    for table in tables:
+                        if 'status' not in table:
+                            table['status'] = 'available'
                 else:
                     # No timestamps, default to cafe_layout_data
                     print("Using cafe_layout_data (no timestamps)")
@@ -182,14 +163,17 @@ def get_cafeLayout():
                 print("Using cafe_layout_data (only cafe data exists)")
                 tables = layout.cafe_layout_data.get('tables', [])
             elif layout.model_layout_data:
-                print("Using model_layout_data (only model data exists)")
+                print("Using model_layout_data (only model data exists) with default status")
                 tables = layout.model_layout_data.get('tables', [])
+                # Set default status for all tables since no cafe data exists
+                for table in tables:
+                    if 'status' not in table:
+                        table['status'] = 'available'
                 
         else:
             return jsonify({"error": "Layout not found"}), 404
 
         return jsonify({
-                    # "cafe_id": cafe_id,
                     "tables": tables,
                 }), 200
 
@@ -198,6 +182,36 @@ def get_cafeLayout():
 
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
+
+
+def update_table_statuses(model_tables, cafe_tables):
+    """
+    Update table statuses in model_tables based on cafe_tables
+    """
+    # Create a mapping of table_id to status from cafe_tables
+    cafe_status_map = {}
+    for cafe_table in cafe_tables:
+        table_id = cafe_table.get('table_id')
+        status = cafe_table.get('status', 'available')
+        if table_id:
+            cafe_status_map[table_id] = status
+    
+    # Update model_tables with statuses from cafe_tables
+    updated_tables = []
+    for model_table in model_tables:
+        table_copy = model_table.copy()
+        table_id = table_copy.get('table_id')
+        
+        if table_id in cafe_status_map:
+            # Use status from cafe_layout_data
+            table_copy['status'] = cafe_status_map[table_id]
+        else:
+            # Default status if not found in cafe data
+            table_copy['status'] = 'available'
+            
+        updated_tables.append(table_copy)
+    
+    return updated_tables
 
 
 # Save cafe layout information
