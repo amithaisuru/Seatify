@@ -80,5 +80,5 @@ def update_cafe_layout_timestamp(target, value, oldvalue, initiator):
     """Update cafe_layout_updated_at when cafe_layout_data changes"""
     # Only update if the value actually changed and it's not None
     if oldvalue != value and value is not None:
-        target.cafe_layout_updated_at = datetime.utcnow()
+        target.cafe_layout_updated_at = datetime.now()
         print(f"-------------------Updated cafe_layout_updated_at for cafe_id: {getattr(target, 'cafe_id', 'unknown')}")
