@@ -102,6 +102,7 @@ class CafeLayout:
         self.sclae_coordinates(400, 400)  # Scale coordinates to fit in a 800x800 canvas
         layout_data = {
             "tables": [],
+            "timestamp": datetime.now().isoformat()
         }        
         for table in self.tables:
             center_x = float(table.center[0]) if isinstance(table.center[0], (np.integer, np.floating)) else table.center[0]
@@ -115,8 +116,8 @@ class CafeLayout:
                 "assigned_chairs_IDs": table.get_chair_id_list(),
                 "seated_persons_count": len(table.persons),
                 "assigned_people_IDs": table.get_person_id_list(),
-                "timestamp": datetime.now().isoformat()
             })
+            layout_data["timestamp"] = datetime.now().isoformat()  # Update timestamp for each table
         print("layout data inside update database---------------------------------------------")
         print(layout_data)
         print("---------------------------------------------------------------------------------")
