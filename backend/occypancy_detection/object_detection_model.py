@@ -122,7 +122,7 @@ cap = cv2.VideoCapture(r'HOTWOK -2-A.mp4')
 frameIndex = 0
 
 while cap.isOpened():
-    ret, frame = get_next_frame(1, cap)  # Get the next frame after 1 minute
+    ret, frame = get_next_frame(0.1, cap)  # Get the next frame after 1 minute
     if not ret:
         break
 
