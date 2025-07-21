@@ -1,4 +1,5 @@
 # cafe owner side
+import datetime
 from flask import Blueprint, jsonify, request
 from extensions import db
 from classModels.Cafe import Cafe
@@ -121,19 +122,35 @@ def get_cafeLayout():
         # Fetch layout from the database
         layout = CafeLayout.query.filter_by(cafe_id=cafe.id).first()
         if layout:
+            # Extract timestamps from within the JSON data
+            cafe_timestamp = None
+            model_timestamp = None
+            
+            if layout.cafe_layout_data:
+                cafe_timestamp_str = layout.cafe_layout_data.get('timestamp')
+                if cafe_timestamp_str:
+                    try:
+                        cafe_timestamp = datetime.datetime.fromisoformat(cafe_timestamp_str)
+                    except ValueError:
+                        cafe_timestamp = None
+            
+            if layout.model_layout_data:
+                model_timestamp_str = layout.model_layout_data.get('timestamp')
+                if model_timestamp_str:
+                    try:
+                        model_timestamp = datetime.datetime.fromisoformat(model_timestamp_str)
+                    except ValueError:
+                        model_timestamp = None
+            
             # Debug: Print timestamp values
-            print(f"cafe_layout_updated_at: {layout.cafe_layout_updated_at}")
-            print(f"model_layout_updated_at: {layout.model_layout_updated_at}")
+            print(f"cafe_layout_timestamp: {cafe_timestamp}")
+            print(f"model_layout_timestamp: {model_timestamp}")
             
             if layout.cafe_layout_data and layout.model_layout_data:
                 # Compare timestamps and take the latest one
-                # Handle case where timestamps might be None
-                cafe_timestamp = layout.cafe_layout_updated_at
-                model_timestamp = layout.model_layout_updated_at
-                
                 if cafe_timestamp and model_timestamp:
                     # Both timestamps exist, compare them
-                    if cafe_timestamp > model_timestamp:
+                    if cafe_timestamp < model_timestamp:
                         print("Using model_layout_data (newer) with cafe status updates")
                         tables = layout.model_layout_data.get('tables', [])
                         # Update table statuses from cafe_layout_data
@@ -227,6 +244,11 @@ def save_layout():
 
         print('tables', tables)
         # print('chairs', chairs)
+
+        # Calculate number of available chairs
+        # available_chairs = sum(1 for chair in chairs if chair.get('status') == 'available')
+        # print('available_chairs', available_chairs)
+
         if not tables:
             return jsonify({"error": "Missing layout data"}), 400
 
@@ -244,7 +266,7 @@ def save_layout():
             # Update existing layout
             layout.cafe_layout_data = {
                 "tables": tables,
-                # "chairs": chairs
+                "timestamp": datetime.datetime.now().isoformat()
             }
         else:
             # Create a new layout record - don't set model_layout_data unless needed
@@ -253,7 +275,7 @@ def save_layout():
                 # model_layout_data will remain None/NULL, which won't trigger the event
                 cafe_layout_data={
                     "tables": tables,
-                    # "chairs": chairs
+                    "timestamp": datetime.datetime.now().isoformat()
                 }
             )
             db.session.add(layout)
