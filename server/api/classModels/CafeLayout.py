@@ -53,7 +53,7 @@ class CafeLayout(db.Model):
         """
         self.cafe_layout_data = layout_data
         # The event listener will automatically set cafe_layout_updated_at
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now()
 
     def update_model_layout_data(self, layout_data):
         """
@@ -63,7 +63,7 @@ class CafeLayout(db.Model):
         """
         self.model_layout_data = layout_data
         # The event listener will automatically set model_layout_updated_at
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now()
 
     def update_layout_data(self, layout_data):
         """

@@ -59,14 +59,14 @@ class CafeLayoutDbModel(Base):
                 cafe_layout = CafeLayoutDbModel(
                     cafe_id=cafe_id,
                     model_layout_data=layout_data,
-                    updated_at=datetime.utcnow(),
-                    model_layout_updated_at=datetime.utcnow()
+                    updated_at=datetime.now(),
+                    model_layout_updated_at=datetime.now()
                 )
                 session.add(cafe_layout)
             else:
                 # Update existing entry
                 cafe_layout.model_layout_data = layout_data
-                cafe_layout.updated_at = datetime.utcnow()
+                cafe_layout.updated_at = datetime.now()
 
             session.commit()
         except (TypeError, ValueError) as e:
@@ -83,7 +83,7 @@ class CafeLayoutDbModel(Base):
 def update_model_layout_timestamp(target, value, oldvalue, initiator):
     """Update model_layout_updated_at when model_layout_data changes"""
     if oldvalue != value and value is not None:
-        target.model_layout_updated_at = datetime.utcnow()
+        target.model_layout_updated_at = datetime.now()
         print(f"--------------------Updated model_layout_updated_at for CafeLayout {target.id}")
 
 # Define Cafe model (required for the foreign key relationship)
