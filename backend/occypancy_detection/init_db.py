@@ -82,9 +82,16 @@ class CafeLayoutDbModel(Base):
 @event.listens_for(CafeLayoutDbModel.model_layout_data, 'set')
 def update_model_layout_timestamp(target, value, oldvalue, initiator):
     """Update model_layout_updated_at when model_layout_data changes"""
-    if oldvalue != value:
-        target.model_layout_updated_at = datetime.now()
-        print(f"--------------------Updated model_layout_updated_at for CafeLayout {target.id} to {target.model_layout_updated_at}")
+    if oldvalue != value and value is not None:
+        target.model_layout_updated_at = datetime.utcnow()
+        print(f"--------------------Updated model_layout_updated_at for CafeLayout {target.id}")
+
+@event.listens_for(CafeLayoutDbModel.cafe_layout_data, 'set')
+def update_cafe_layout_timestamp(target, value, oldvalue, initiator):
+    """Update cafe_layout_updated_at when cafe_layout_data changes"""
+    if oldvalue != value and value is not None:
+        target.cafe_layout_updated_at = datetime.utcnow()
+        print(f"--------------------Updated cafe_layout_updated_at for CafeLayout {target.id}")
 
 # Define Cafe model (required for the foreign key relationship)
 class Cafe(Base):
