@@ -133,7 +133,7 @@ def get_cafeLayout():
                 
                 if cafe_timestamp and model_timestamp:
                     # Both timestamps exist, compare them
-                    if cafe_timestamp < model_timestamp:
+                    if cafe_timestamp > model_timestamp:
                         print("Using model_layout_data (newer) with cafe status updates")
                         tables = layout.model_layout_data.get('tables', [])
                         # Update table statuses from cafe_layout_data
