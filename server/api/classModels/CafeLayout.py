@@ -13,11 +13,10 @@
 #     cafe = db.relationship('Cafe', backref=db.backref('layout', lazy=True))
 
 
-from extensions import db
 from datetime import datetime
-from sqlalchemy import event
 
 from extensions import db
+from sqlalchemy import event
 
 
 class CafeLayout(db.Model):
@@ -49,7 +48,7 @@ class CafeLayout(db.Model):
 
     #update the layout data
 
-    '''def update_layout_data(self, layout_data):
+    def update_layout_data(self, layout_data):
         """
         Update the cafe layout data with new layout information.
         
@@ -57,7 +56,7 @@ class CafeLayout(db.Model):
         """
         self.cafe_layout_data = layout_data
         self.updated_at = datetime.utcnow()
-        db.session.commit()'''
+        db.session.commit()
         
 # Event listeners to automatically update timestamps when layout data changes
 @event.listens_for(CafeLayout.model_layout_data, 'set')

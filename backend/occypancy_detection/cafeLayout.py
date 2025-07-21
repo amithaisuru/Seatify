@@ -1,4 +1,5 @@
 import json
+import math
 
 from chair import Chair
 from init_db import CafeLayoutDbModel
@@ -201,6 +202,51 @@ class CafeLayout:
                 print(f"Chair {chair.id} assigned to Table {best_table.id} with IoU {best_iou:.2f}")
             else:
                 print(f"Chair {chair.id} could not be assigned to any table")
+    
+    def map_chairs_to_tables_by_distance(self):
+        print("map chair to tables by distance called")
+        
+        for chair in self.chairs:
+            min_distance = float('inf')
+            closest_table = None
+
+            for table in self.tables:
+                #calculate euclidean distance between chair and table center
+                distance = math.sqrt((chair.center[0] - table.center[0])**2 + (chair.center[1] - table.center[1])**2)
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_table = table
+            
+            if closest_table:
+                closest_table.add_chair(chair)
+
+    def map_people_to_tables_by_distance(self):
+        print("map people to tables by distance called")
+        
+        for person in self.people:
+            if not person.is_sitting:
+                continue
+            min_distance = float('inf')
+            closest_table = None
+
+            for table in self.tables:
+                #calculate euclidean distance between person and table center
+                distance = math.sqrt((person.center[0] - table.center[0])**2 + (person.center[1] - table.center[1])**2)
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_table = table
+            
+            if closest_table:
+                closest_table.add_person(person)
+
+    def analyze_occupancy(self):
+        '''
+        detects occupied seats using chair to table mapping and person to table mapping.
+        '''
+        for table in self.tables:
+            num_of_chairs_to_be_occupied = min(len(table.chairs), len(table.persons))
+            for i in range(num_of_chairs_to_be_occupied): 
+                table.chairs[i].assign_occupant(table.persons[i])
     
     def calculate_iou(self, box1, box2):
         x1, y1, x2, y2 = box1
