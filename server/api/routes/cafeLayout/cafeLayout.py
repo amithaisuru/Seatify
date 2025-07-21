@@ -209,16 +209,16 @@ def save_layout():
         data = request.get_json()
 
         tables = data.get('tables', [])
-        chairs = data.get('chairs', [])
+        # chairs = data.get('chairs', [])
 
         print('tables', tables)
-        print('chairs', chairs)
+        # print('chairs', chairs)
 
         # Calculate number of available chairs
         # available_chairs = sum(1 for chair in chairs if chair.get('status') == 'available')
         # print('available_chairs', available_chairs)
 
-        if not tables or not chairs:
+        if not tables:
             return jsonify({"error": "Missing layout data"}), 400
 
         # ✅ Get the Cafe for this user
@@ -235,7 +235,7 @@ def save_layout():
             # Update existing layout
             layout.cafe_layout_data = {
                 "tables": tables,
-                "chairs": chairs
+                # "chairs": chairs
             }
         else:
             # Create a new layout record - don't set model_layout_data unless needed
@@ -244,7 +244,7 @@ def save_layout():
                 # model_layout_data will remain None/NULL, which won't trigger the event
                 cafe_layout_data={
                     "tables": tables,
-                    "chairs": chairs
+                    # "chairs": chairs
                 }
             )
             db.session.add(layout)
@@ -253,7 +253,7 @@ def save_layout():
 
         return jsonify({
             "message": "Layout saved successfully!",
-            "available_chairs": available_chairs
+            # "available_chairs": available_chairs
         }), 200
 
     except SQLAlchemyError as e:
