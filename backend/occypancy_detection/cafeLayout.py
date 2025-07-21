@@ -96,17 +96,7 @@ class CafeLayout:
             canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=chair.id, fill="black")
 
         root.mainloop()
-    
-    def update_chair_occupancy(self, chair_id, occupied=False, person_id=None):
-        for chair in self.chairs:
-            if chair.id == chair_id:
-                chair.occupied = occupied
-                if occupied and person_id is not None:
-                    chair.occupant = person_id
-                else:
-                    chair.occupant = None
-                break
-    
+      
     def update_databse(self):
         self.sclae_coordinates(400, 400)  # Scale coordinates to fit in a 800x800 canvas
         layout_data = {
@@ -147,53 +137,6 @@ class CafeLayout:
         for chair in self.chairs:
             chair.center = (chair.center[0] * scale_x, chair.center[1] * scale_y)
 
-    def map_people_to_chairs(self):
-        print("map people to chairs called")
-        for table in self.tables:
-            number_of_chairs = len(table.chairs)
-            iou_value = []
-            #calculate iou of each person with the table using calculate_iou method.
-            for person in self.people:
-                if not person.is_sitting:
-                    continue
-                person_box = (person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1])
-                table_box = (table.top_left[0], table.top_left[1], table.bottom_right[0], table.bottom_right[1])
-                iou = self.calculate_iou(person_box, table_box)
-                if iou > 0.1:
-                    iou_value.append((iou, person))
-                # Sort the iou_value list in descending order based on the iou value
-            iou_value.sort(reverse=True, key=lambda x: x[0])
-            # Map the top N people to the chairs, where N is the number of chairs
-            for i in range(min(number_of_chairs, len(iou_value))):
-                person = iou_value[i][1]
-                chair = table.chairs[i]
-                if chair.assign_occupant(person):
-                    print(f"Person {person.id} is assigned to Chair {chair.id} at Table {table.id}")
-                else:
-                    print(f"Person {person.id} could not be assigned to Chair {chair.id} at Table {table.id}")
-                        
-    def map_chairs_to_tables(self):
-        print("map chair to tables called")
-        iou_threshold = 0.25
-        for chair in self.chairs:
-            #pass if chair already occupied
-            if chair.occupied:
-                continue
-            best_table = None
-            best_iou = 0
-            chair_box = (chair.top_left[0], chair.top_left[1], chair.bottom_right[0], chair.bottom_right[1])
-            for table in self.tables:
-                table_box = (table.top_left[0], table.top_left[1], table.bottom_right[0], table.bottom_right[1])
-                iou = self.calculate_iou(chair_box, table_box)
-                if iou > best_iou and iou > iou_threshold:
-                    best_iou = iou
-                    best_table = table
-            if best_table:
-                best_table.add_chair(chair)
-                print(f"Chair {chair.id} assigned to Table {best_table.id} with IoU {best_iou:.2f}")
-            else:
-                print(f"Chair {chair.id} could not be assigned to any table")
-    
     def map_chairs_to_tables_by_distance(self):
         print("map chair to tables by distance called")
         
