@@ -1,3 +1,4 @@
+import numpy as np
 from cafeObjects import CafeObjects
 
 
@@ -5,7 +6,7 @@ class Person(CafeObjects):
     def __init__(self, id, topLeft, bottomRight, posture = 'unknown'):
         super().__init__(topLeft, bottomRight)
         self.calculate_center()
-        self.id = id
+        self.id = int(id) if isinstance(id, (np.integer, np.floating)) else id
         if posture == 'sitting':
             self.is_sitting = True
         else:
