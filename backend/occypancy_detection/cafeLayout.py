@@ -1,6 +1,7 @@
 import json
 import math
 
+import numpy as np
 from chair import Chair
 from init_db import CafeLayoutDbModel
 from person import Person
@@ -109,36 +110,26 @@ class CafeLayout:
     def update_databse(self):
         self.sclae_coordinates(400, 400)  # Scale coordinates to fit in a 800x800 canvas
         layout_data = {
-            "chairs": [],
-            "tables": []
-        }
-        for chair in self.chairs:
-            layout_data["chairs"].append({
-                "x": chair.center[0],
-                "y": chair.center[1],
-                "label": f"C{chair.id}",
-                "status": "occupied" if chair.occupied else "available"
-            })
-        
+            "tables": [],
+        }        
         for table in self.tables:
+            center_x = float(table.center[0]) if isinstance(table.center[0], (np.integer, np.floating)) else table.center[0]
+            center_y = float(table.center[1]) if isinstance(table.center[1], (np.integer, np.floating)) else table.center[1]
             layout_data["tables"].append({
-                "x": table.center[0],
-                "y": table.center[1],
-                "label": f"T{table.id}"
+                "x": center_x,
+                "y": center_y,
+                "tabel_id": f"T{table.id}",
+                "status": "available",
+                "chair_count": len(table.chairs),
+                "assigned_chairs_IDs": table.get_chair_id_list(),
+                "seated_persons_count": len(table.persons),
+                "assigned_people_IDs": table.get_person_id_list()
             })
-        
-        #make dummy details for testing
-        layout_test_data = {
-            "chairs": [
-                {"x": 100, "y": 100, "label": "C1", "status": "available"},
-                {"x": 200, "y": 100, "label": "C2", "status": "occupied"}
-            ],
-            "tables": [
-                {"x": 150, "y": 150, "label": "T1"}
-            ]
-        }
-        cafe_layut_db_handler = CafeLayoutDbModel()
-        cafe_layut_db_handler.update_layout_data(layout_data,3)
+        print("layout data inside update database---------------------------------------------")
+        print(layout_data)
+        print("---------------------------------------------------------------------------------")
+        cafe_layout_db_handler = CafeLayoutDbModel()
+        cafe_layout_db_handler.update_layout_data(layout_data,3)
 
     def sclae_coordinates(self, width = 400, height = 400):        
         #find max x cordinate in chair or table center
