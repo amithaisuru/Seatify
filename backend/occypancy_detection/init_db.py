@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, create_engine
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, create_engine, event
 from sqlalchemy.dialects.mysql import JSON  # Change to MySQL JSON type
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -69,6 +69,19 @@ class CafeLayoutDbModel(Base):
             session.rollback()
             session.close()
             raise Exception(f"Failed to update layout data: {str(e)}")
+
+# Event listeners to automatically update timestamps when layout data changes
+@event.listens_for(CafeLayoutDbModel.model_layout_data, 'set')
+def update_model_layout_timestamp(target, value, oldvalue, initiator):
+    """Update model_layout_updated_at when model_layout_data changes"""
+    if oldvalue != value:
+        target.model_layout_updated_at = datetime.utcnow()
+
+@event.listens_for(CafeLayoutDbModel.cafe_layout_data, 'set')
+def update_cafe_layout_timestamp(target, value, oldvalue, initiator):
+    """Update cafe_layout_updated_at when cafe_layout_data changes"""
+    if oldvalue != value:
+        target.cafe_layout_updated_at = datetime.utcnow()
 
 # Define Cafe model (required for the foreign key relationship)
 class Cafe(Base):
