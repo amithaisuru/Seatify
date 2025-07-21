@@ -8,7 +8,7 @@ const NewCafeLayout = ({
   tables,
   width = 100,
   height = 60,
-  editable = true,
+  editable = false,
   fetchCafeLayout,
 }) => {
   const { token } = useContext(AuthContext);
