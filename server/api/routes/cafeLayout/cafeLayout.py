@@ -227,11 +227,6 @@ def save_layout():
 
         print('tables', tables)
         # print('chairs', chairs)
-
-        # Calculate number of available chairs
-        # available_chairs = sum(1 for chair in chairs if chair.get('status') == 'available')
-        # print('available_chairs', available_chairs)
-
         if not tables:
             return jsonify({"error": "Missing layout data"}), 400
 
