@@ -226,7 +226,7 @@ const NewCafeLayout = ({
                 }`}
                 onClick={() => handleTableClick(tableIndex)}
               >
-                {table.table_id}
+                {table.tabel_id}
               </div>
             </React.Fragment>
           );
