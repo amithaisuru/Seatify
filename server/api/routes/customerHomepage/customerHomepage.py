@@ -71,30 +71,7 @@ def get_seats_by_cafe_id(cafe_id):
         if not cafe:
             return jsonify({"error": "Cafe not found"}), 404
 
-        # Hardcoded values for layout display
-        # tables = [
-        #     { "x": 100, "y": 80, "label": "T1" },
-        #     { "x": 300, "y": 80, "label": "T2" }
-        # ]
-
-        # chairs = [
-        #     { "x": 80, "y": 60, "label": "C1", "status": "available" },
-        #     { "x": 150, "y": 60, "label": "C2", "status": "occupied" },
-        #     { "x": 80, "y": 120, "label": "C3", "status": "available" },
-        #     { "x": 170, "y": 90, "label": "C13", "status": "available" },
-        #     { "x": 160, "y": 130, "label": "C4", "status": "available" },
-        #     { "x": 130, "y": 150, "label": "C5", "status": "occupied" },
-        #     { "x": 280, "y": 60, "label": "C10", "status": "available" },
-        #     { "x": 320, "y": 60, "label": "C6", "status": "occupied" },
-        #     { "x": 360, "y": 80, "label": "C11", "status": "occupied" },
-        #     { "x": 370, "y": 110, "label": "C9", "status": "occupied" },
-        #     { "x": 280, "y": 120, "label": "C7", "status": "available" },
-        #     { "x": 350, "y": 140, "label": "C8", "status": "available" },
-        #     { "x": 310, "y": 140, "label": "C12", "status": "available" },
-        # ]
-
         tables=[]
-        # chairs=[]
 
         # Fetch layout from the database
         layout = CafeLayout.query.filter_by(cafe_id=cafe.id).first()
@@ -112,36 +89,40 @@ def get_seats_by_cafe_id(cafe_id):
                 if cafe_timestamp and model_timestamp:
                     # Both timestamps exist, compare them
                     if cafe_timestamp < model_timestamp:
+                        print("Using model_layout_data (newer) with cafe status updates")
+                        tables = layout.model_layout_data.get('tables', [])
+                        # Update table statuses from cafe_layout_data
+                        cafe_tables = layout.cafe_layout_data.get('tables', [])
+                        tables = update_table_statuses(tables, cafe_tables)
+                    else:
                         print("Using cafe_layout_data (newer)")
                         tables = layout.cafe_layout_data.get('tables', [])
-                        # chairs = layout.cafe_layout_data.get('chairs', [])
-                    else:
-                        print("Using model_layout_data (newer)")
-                        tables = layout.model_layout_data.get('tables', [])
-                        # chairs = layout.model_layout_data.get('chairs', [])
                 elif cafe_timestamp:
                     # Only cafe timestamp exists
                     print("Using cafe_layout_data (only cafe timestamp exists)")
                     tables = layout.cafe_layout_data.get('tables', [])
-                    # chairs = layout.cafe_layout_data.get('chairs', [])
                 elif model_timestamp:
                     # Only model timestamp exists
-                    print("Using model_layout_data (only model timestamp exists)")
+                    print("Using model_layout_data (only model timestamp exists) with default status")
                     tables = layout.model_layout_data.get('tables', [])
-                    # chairs = layout.model_layout_data.get('chairs', [])
+                    # Set default status for all tables since no cafe data exists
+                    for table in tables:
+                        if 'status' not in table:
+                            table['status'] = 'available'
                 else:
                     # No timestamps, default to cafe_layout_data
                     print("Using cafe_layout_data (no timestamps)")
                     tables = layout.cafe_layout_data.get('tables', [])
-                    # chairs = layout.cafe_layout_data.get('chairs', [])
             elif layout.cafe_layout_data:
                 print("Using cafe_layout_data (only cafe data exists)")
                 tables = layout.cafe_layout_data.get('tables', [])
-                # chairs = layout.cafe_layout_data.get('chairs', [])
             elif layout.model_layout_data:
-                print("Using model_layout_data (only model data exists)")
+                print("Using model_layout_data (only model data exists) with default status")
                 tables = layout.model_layout_data.get('tables', [])
-                # chairs = layout.model_layout_data.get('chairs', [])
+                # Set default status for all tables since no cafe data exists
+                for table in tables:
+                    if 'status' not in table:
+                        table['status'] = 'available'
                 
         else:
             return jsonify({"error": "Layout not found"}), 404
@@ -149,7 +130,6 @@ def get_seats_by_cafe_id(cafe_id):
         return jsonify({
                     "cafe_id": cafe_id,
                     "tables": tables,
-                    # "chairs": chairs
                 }), 200
 
     except SQLAlchemyError as e:
@@ -157,3 +137,33 @@ def get_seats_by_cafe_id(cafe_id):
 
     except Exception as e:
         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
+
+
+def update_table_statuses(model_tables, cafe_tables):
+    """
+    Update table statuses in model_tables based on cafe_tables
+    """
+    # Create a mapping of table_id to status from cafe_tables
+    cafe_status_map = {}
+    for cafe_table in cafe_tables:
+        table_id = cafe_table.get('table_id')
+        status = cafe_table.get('status', 'available')
+        if table_id:
+            cafe_status_map[table_id] = status
+    
+    # Update model_tables with statuses from cafe_tables
+    updated_tables = []
+    for model_table in model_tables:
+        table_copy = model_table.copy()
+        table_id = table_copy.get('table_id')
+        
+        if table_id in cafe_status_map:
+            # Use status from cafe_layout_data
+            table_copy['status'] = cafe_status_map[table_id]
+        else:
+            # Default status if not found in cafe data
+            table_copy['status'] = 'available'
+            
+        updated_tables.append(table_copy)
+    
+    return updated_tables
