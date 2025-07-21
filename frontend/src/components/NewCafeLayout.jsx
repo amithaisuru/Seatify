@@ -15,11 +15,78 @@ const NewCafeLayout = ({
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [localTables, setLocalTables] = useState(tables || []);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 800
+  );
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Update local tables when props change
   useEffect(() => {
     setLocalTables(tables || []);
   }, [tables]);
+
+  // Calculate min/max values for coordinate normalization
+  const getCoordinateBounds = (tables) => {
+    if (!tables || tables.length === 0) {
+      return { minX: 0, maxX: 1, minY: 0, maxY: 1 };
+    }
+
+    const xValues = tables.map((table) => table.x);
+    const yValues = tables.map((table) => table.y);
+
+    return {
+      minX: Math.min(...xValues),
+      maxX: Math.max(...xValues),
+      minY: Math.min(...yValues),
+      maxY: Math.max(...yValues),
+    };
+  };
+
+  // Normalize coordinates to fit within the layout area - responsive
+  const normalizePosition = (x, y) => {
+    const bounds = getCoordinateBounds(localTables);
+
+    // Responsive layout dimensions using state
+    const layoutWidth = windowWidth < 640 ? 320 : 800;
+    const layoutHeight = windowWidth < 640 ? 400 : 675;
+
+    // Responsive table and chair sizes using state
+    const tableSize = windowWidth < 640 ? 32 : 48;
+    const chairRadius = windowWidth < 640 ? 12 : 18;
+    const padding = tableSize + chairRadius * 2;
+
+    // Available space for positioning
+    const availableWidth = layoutWidth - padding * 2;
+    const availableHeight = layoutHeight - padding * 2;
+
+    // Normalize coordinates
+    const xRange = bounds.maxX - bounds.minX || 1;
+    const yRange = bounds.maxY - bounds.minY || 1;
+
+    const normalizedX =
+      bounds.minX === bounds.maxX
+        ? availableWidth / 2
+        : ((x - bounds.minX) / xRange) * availableWidth;
+
+    const normalizedY =
+      bounds.minY === bounds.maxY
+        ? availableHeight / 2
+        : ((y - bounds.minY) / yRange) * availableHeight;
+
+    return {
+      left: `${normalizedX + padding}px`,
+      top: `${normalizedY + padding}px`,
+    };
+  };
 
   // Handle chair click to cycle through statuses
   const handleChairClick = (tableIndex, chairIndex) => {
@@ -69,20 +136,28 @@ const NewCafeLayout = ({
     });
   };
 
-  // Use fixed positions and sizes
-  const getFixedPosition = (x, y) => ({ left: `${x}px`, top: `${y}px` });
-  const getFixedSize = (size) => size;
+  // Responsive sizes using state
+  const getResponsiveSize = (desktopSize, mobileSize) => {
+    return windowWidth < 640 ? mobileSize : desktopSize;
+  };
 
-  // Generate chairs around each table
+  // Generate chairs around each table - responsive
   const generateChairsForTable = (table, tableIndex) => {
     const chairs = [];
-    const tableSize = getFixedSize(48); // px
-    const radius = tableSize / 2 + 18; // px
+    const tableSize = getResponsiveSize(48, 32);
+    const radius = tableSize / 2 + getResponsiveSize(18, 12);
     const angleStep = (2 * Math.PI) / table.chair_count;
+
+    // Get normalized table position
+    const tablePos = normalizePosition(table.x, table.y);
+    const tableX = parseFloat(tablePos.left);
+    const tableY = parseFloat(tablePos.top);
+
     for (let i = 0; i < table.chair_count; i++) {
       const angle = i * angleStep;
-      const chairX = table.x + 10 + radius * Math.cos(angle);
-      const chairY = table.y + 10 + radius * Math.sin(angle);
+      const chairX = tableX + 10 + radius * Math.cos(angle);
+      const chairY = tableY + 10 + radius * Math.sin(angle);
+
       // Use assigned_chairs_IDs for chair label and ID
       const chairId = table.assigned_chairs_IDs[i] ?? null;
       chairs.push({
@@ -127,6 +202,7 @@ const NewCafeLayout = ({
         }, 1000);
         // Refresh the layout data
       } else {
+        const data = await response.json();
         if (data.error === "Token has expired!") {
           console.error("Token expired. Redirecting to login...");
           setMessage("Token expired. Please log in again.");
@@ -155,26 +231,25 @@ const NewCafeLayout = ({
   return (
     <div className="space-y-4">
       <div
-        className="relative border bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800"
+        className="relative border bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800 mx-auto"
         style={{
-          minHeight: "600px",
-          width: "800px",
-          height: "675px",
+          minHeight: windowWidth < 640 ? "500px" : "600px",
+          width: windowWidth < 640 ? "500px" : "800px",
+          height: windowWidth < 640 ? "400px" : "660px",
           aspectRatio: "4/3",
         }}
       >
         {/* Tables */}
         {localTables.map((table, tableIndex) => {
-          const tableSize = getFixedSize(48);
-          const position = getFixedPosition(table.x, table.y);
-          // Generate chairs for this table
+          const tableSize = getResponsiveSize(48, 32);
+          const position = normalizePosition(table.x, table.y);
           const chairs = generateChairsForTable(table, tableIndex);
           return (
             <React.Fragment key={`table-group-${tableIndex}`}>
               {/* Chairs for this table */}
               {chairs.map((chair, chairIndex) => {
-                const chairSize = getFixedSize(24);
-                const chairPos = getFixedPosition(chair.x, chair.y);
+                const chairSize = getResponsiveSize(24, 16);
+                const chairPos = { left: `${chair.x}px`, top: `${chair.y}px` };
                 return (
                   <div
                     key={`table-${tableIndex}-chair-${chairIndex}`}
@@ -193,7 +268,7 @@ const NewCafeLayout = ({
                       ...chairPos,
                       width: `${chairSize}px`,
                       height: `${chairSize}px`,
-                      fontSize: `${Math.max(chairSize / 3, 8)}px`,
+                      fontSize: `${Math.max(chairSize / 3, 6)}px`,
                     }}
                     title={`Chair ${chair.label} - ${
                       table.status === "reserved" ? "reserved" : chair.status
@@ -202,7 +277,9 @@ const NewCafeLayout = ({
                     }`}
                     onClick={() => handleChairClick(tableIndex, chairIndex)}
                   >
-                    {chair.label}
+                    {windowWidth < 640
+                      ? chair.label.replace("C", "")
+                      : chair.label}
                   </div>
                 );
               })}
@@ -219,7 +296,7 @@ const NewCafeLayout = ({
                   ...position,
                   width: `${tableSize}px`,
                   height: `${tableSize}px`,
-                  fontSize: `${Math.max(tableSize / 5, 10)}px`,
+                  fontSize: `${Math.max(tableSize / 5, 8)}px`,
                 }}
                 title={`Table ${table.table_id} - ${table.status}${
                   editable ? " (Click to toggle reservation)" : ""
@@ -233,49 +310,55 @@ const NewCafeLayout = ({
         })}
       </div>
 
-      {/* Save button and message */}
+      {/* Save button and message - responsive */}
       {editable && (
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
           <button
             onClick={saveTables}
             disabled={saving}
-            className="px-4 py-2 bg-primary-dark hover:bg-primary-light text-white rounded-md transition"
+            className="px-3 py-2 sm:px-4 bg-primary-dark hover:bg-primary-light text-white rounded-md transition text-sm sm:text-base"
           >
-            {saving ? "Save Layout" : "Save Layout"}
+            {saving ? "Saving..." : "Save Layout"}
           </button>
           {message && (
             <div
-              className={`text-sm ${
+              className={`text-xs sm:text-sm ${
                 message.includes("Error")
                   ? "text-red-600"
-                  : "text-sm text-gray-700 dark:text-gray-300"
+                  : "text-gray-700 dark:text-gray-300"
               }`}
             >
               {message}
             </div>
           )}
 
-          {/* Legend */}
-          {/* <div className="flex items-center gap-4"> */}
-          <div className="flex items-center gap-2">
-            <div className="w-4 rounded-sm h-4 bg-red-500" />
-            <span>Occupied Chair</span>
+          {/* Legend - responsive */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-red-500" />
+              <span>Occupied</span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-green-500" />
+              <span>Available</span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-blue-500" />
+              <span>Reserved</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 rounded-sm h-4 bg-green-500" />
-            <span>Available Chair</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 rounded-sm h-4 bg-blue-500" />
-            <span>Reserved Table/Chair</span>
-          </div>
+
           {editable && (
-            <div className="text-sm text-gray-600 ml-4">
-              Click on chairs to toggle occupied/available • Click on tables to
-              toggle reservation
+            <div className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-0 sm:ml-4">
+              <span className="hidden sm:inline">
+                Click on chairs to toggle occupied/available • Click on tables
+                to toggle reservation
+              </span>
+              <span className="sm:hidden">
+                Tap chairs/tables to toggle status
+              </span>
             </div>
           )}
-          {/* </div> */}
         </div>
       )}
     </div>
