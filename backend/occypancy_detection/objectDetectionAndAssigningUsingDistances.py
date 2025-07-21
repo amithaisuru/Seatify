@@ -16,7 +16,7 @@ else:
     print("Using CPU")
 
 # Create an output folder for annotated frames
-output_dir = 'annotated_frames/video2'
+output_dir = 'annotated_frames/HotWok-Cam2-HOTWOK-2-A'
 os.makedirs(output_dir, exist_ok=True)
 
 # Load models onto GPU
@@ -219,7 +219,7 @@ IOU_THRESHOLD = 0.2
 
 # Start the detection + track stream
 stream = det_model.track(
-    source=r'/Users/sadeepa/Desktop/Self Study/Seatify/Input Videos/video2.mp4',
+    source=r'/Users/sadeepa/Desktop/Self Study/Seatify/Input Videos/HOTWOK-Cam 2/HOTWOK -2-A.mp4',
     tracker='bytetrack.yaml',
     classes=[0,56, 60],
     persist=True,
