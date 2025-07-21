@@ -1,6 +1,6 @@
 /backend/occypancy_detection/__pycache__
 /env
-/backend/occypancy_detection
+# /backend/occypancy_detection
 /server/api/classModels/__pycache__
 /server/api/__pycache__
 /server/api/routes/authentication/__pycache__
@@ -36,7 +36,34 @@
 hs_err_pid*
 replay_pid*
 
-myenv/
+venv/
 __pycache__/
 *.pyc
 *.log
+
+#remove mp4 files
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.flv
+*.wmv
+*.webm
+*.mpeg
+*.mpg
+*.m4v
+*.3gp
+
+#remove images
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff  
+
+#remove yolov8 files
+*.pt
+*.weights
+*.onnx
+*.pb
