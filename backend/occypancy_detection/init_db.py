@@ -30,7 +30,7 @@ class CafeLayoutDbModel(Base):
     id = Column(Integer, primary_key=True)
     cafe_id = Column(Integer, ForeignKey('cafes.id'), nullable=False)
     model_layout_data = Column(JSON, nullable=False)  # Changed from JSONB to JSON
-    cafe_layout_data = Column(JSON, nullable=True)   # Changed from JSONB to JSON
+    model_layout_updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationship to Cafe model (optional, included for completeness)
@@ -76,46 +76,9 @@ def update_model_layout_timestamp(target, value, oldvalue, initiator):
     """Update model_layout_updated_at when model_layout_data changes"""
     if oldvalue != value:
         target.model_layout_updated_at = datetime.utcnow()
-
-@event.listens_for(CafeLayoutDbModel.cafe_layout_data, 'set')
-def update_cafe_layout_timestamp(target, value, oldvalue, initiator):
-    """Update cafe_layout_updated_at when cafe_layout_data changes"""
-    if oldvalue != value:
-        target.cafe_layout_updated_at = datetime.utcnow()
+        print(f"--------------------Updated model_layout_updated_at for CafeLayout {target.id} to {target.model_layout_updated_at}")
 
 # Define Cafe model (required for the foreign key relationship)
 class Cafe(Base):
     __tablename__ = 'cafes'
     id = Column(Integer, primary_key=True)
-
-# Example usage
-def main():
-    try:
-        # Example: Update layout for a specific cafe_id
-        cafe_id = 3  # Example cafe_id from your cafelayout table
-        new_layout_data = {
-            "chairs": [
-                {"x": 100, "y": 100, "label": "C1", "status": "available"},
-                {"x": 200, "y": 100, "label": "C2", "status": "occupied"}
-            ],
-            "tables": [
-                {"x": 150, "y": 150, "label": "T1"}
-            ]
-        }
-
-        # Create a session and update layout
-        session = Session()
-        cafe_layout = session.query(CafeLayoutDbModel).filter_by(cafe_id=cafe_id).first()
-        if cafe_layout:
-            print(f"Updating layout for cafe_id {cafe_id}")
-            cafe_layout.update_layout_data(new_layout_data, cafe_id)
-            print("Layout updated successfully")
-        else:
-            print(f"No CafeLayout found for cafe_id {cafe_id}")
-        
-        session.close()
-    except Exception as e:
-        print(f"Error: {str(e)}")
-
-if __name__ == "__main__":
-    main()
