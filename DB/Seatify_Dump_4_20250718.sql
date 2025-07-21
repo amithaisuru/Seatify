@@ -29,9 +29,9 @@ CREATE TABLE `cafelayout` (
   `cafe_id` int NOT NULL,
   `model_layout_data` json NOT NULL,
   `cafe_layout_data` json DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `cafe_layout_updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `model_layout_updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `cafe_layout_updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `model_layout_updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `cafe_id` (`cafe_id`),
   CONSTRAINT `cafelayout_ibfk_1` FOREIGN KEY (`cafe_id`) REFERENCES `cafes` (`id`)
