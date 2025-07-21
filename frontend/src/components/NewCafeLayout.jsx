@@ -126,9 +126,6 @@ const NewCafeLayout = ({
           fetchCafeLayout(); // Refresh layout after saving
         }, 1000);
         // Refresh the layout data
-        if (fetchCafeLayout) {
-          fetchCafeLayout();
-        }
       } else {
         if (data.error === "Token has expired!") {
           console.error("Token expired. Redirecting to login...");

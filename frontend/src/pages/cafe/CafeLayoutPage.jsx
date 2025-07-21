@@ -90,7 +90,11 @@ function CafeLayoutPage() {
                 editable={true}
                 fetchCafeLayout={fetchCafeLayout}
               /> */}
-              <NewCafeLayout tables={tables} />
+              <NewCafeLayout
+                tables={tables}
+                editable={true}
+                fetchCafeLayout={fetchCafeLayout}
+              />
             </div>
           </div>
         </main>
