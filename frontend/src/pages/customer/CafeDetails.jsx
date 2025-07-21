@@ -7,6 +7,7 @@ import { BASE_URL } from "../../constants/config";
 import { MapPin, Phone, Map, Users, Landmark } from "lucide-react";
 
 import cafeImage from "../../assets/restuarentimages/HotWok.jpeg";
+import NewCafeLayout from "../../components/NewCafeLayout";
 
 const imageModules = import.meta.glob(
   "../../assets/menuImages/*.{jpg,png,webp}",
@@ -111,7 +112,7 @@ function CafeDetails() {
       if (response.ok) {
         const data = await response.json();
         setTables(data.tables);
-        setChairs(data.chairs);
+        // setChairs(data.chairs);
       } else {
         if (data.error === "Token has expired!") {
           console.error("Token expired. Redirecting to login...");
@@ -277,7 +278,8 @@ function CafeDetails() {
             </h2>
           </div>
           <div className="w-full max-w-[100%] overflow-auto">
-            <CafeLayout tables={tables} chairs={chairs} />
+            {/* <CafeLayout tables={tables} chairs={chairs} /> */}
+            <NewCafeLayout tables={tables} editable={false} />
           </div>
           {/* Call to Make a Reservation Button */}
           <div className="flex items-center gap-4">
