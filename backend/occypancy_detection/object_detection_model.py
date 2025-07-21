@@ -1,4 +1,5 @@
 import os
+import time
 
 import cv2
 import numpy as np
@@ -99,17 +100,33 @@ def is_sitting(knee_angle, torso_angle, hip_knee_level):
     # Threshold to decide sitting vs standing
     return score > 0.364  # Adjust threshold as needed
 
+def get_next_frame(after_n_mins, cap):
+    """
+    Get the next frame after skipping a specified number of minutes.
+    """
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = int(fps * 60 * after_n_mins)
+    for _ in range(frame_count):
+        ret, frame = cap.read()
+        if not ret:
+            return None
+    #sleep for n mins
+    print("sleeping...")
+    time.sleep(after_n_mins * 60)
+    print("returning frame no: ", cap.get(cv2.CAP_PROP_POS_FRAMES))
+    return ret, frame
+
 IOU_THRESHOLD = 0.2
 
 cap = cv2.VideoCapture(r'HOTWOK -2-A.mp4')
 frameIndex = 0
 
 while cap.isOpened():
-    ret, frame = cap.read()
+    ret, frame = get_next_frame(1, cap)  # Get the next frame after 1 minute
     if not ret:
         break
 
-    # if frameIndex % 30 != 0:
+    # if frameIndex % (30) != 0:
     #     frameIndex += 1
     #     continue
 
