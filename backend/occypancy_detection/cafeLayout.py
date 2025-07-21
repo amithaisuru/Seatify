@@ -224,6 +224,8 @@ class CafeLayout:
         print("map people to tables by distance called")
         
         for person in self.people:
+            if not person.is_sitting:
+                continue
             min_distance = float('inf')
             closest_table = None
 
