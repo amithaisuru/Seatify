@@ -1,5 +1,6 @@
 import json
 import math
+from datetime import datetime
 
 import numpy as np
 from chair import Chair
@@ -113,13 +114,14 @@ class CafeLayout:
                 "chair_count": len(table.chairs),
                 "assigned_chairs_IDs": table.get_chair_id_list(),
                 "seated_persons_count": len(table.persons),
-                "assigned_people_IDs": table.get_person_id_list()
+                "assigned_people_IDs": table.get_person_id_list(),
+                "timestamp": datetime.now().isoformat()
             })
         print("layout data inside update database---------------------------------------------")
         print(layout_data)
         print("---------------------------------------------------------------------------------")
         cafe_layout_db_handler = CafeLayoutDbModel()
-        cafe_layout_db_handler.update_layout_data(layout_data,3)
+        cafe_layout_db_handler.update_layout_data(layout_data,11)
 
     def sclae_coordinates(self, width = 400, height = 400):        
         #find max x cordinate in chair or table center
