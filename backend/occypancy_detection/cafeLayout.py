@@ -121,7 +121,7 @@ class CafeLayout:
         print(layout_data)
         print("---------------------------------------------------------------------------------")
         cafe_layout_db_handler = CafeLayoutDbModel()
-        cafe_layout_db_handler.update_layout_data(layout_data,11)
+        cafe_layout_db_handler.update_layout_data(layout_data,3)
 
     def sclae_coordinates(self, width = 400, height = 400):        
         #find max x cordinate in chair or table center
