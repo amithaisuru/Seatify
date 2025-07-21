@@ -118,7 +118,7 @@ def get_next_frame(after_n_mins, cap):
 
 IOU_THRESHOLD = 0.2
 
-cap = cv2.VideoCapture(r'HOTWOK -2-A.mp4')
+cap = cv2.VideoCapture(r'/Users/sadeepa/Desktop/Self Study/Seatify/Input Videos/HOTWOK-Cam1 - 1.mp4')
 frameIndex = 0
 
 while cap.isOpened():
