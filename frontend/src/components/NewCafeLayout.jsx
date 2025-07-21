@@ -55,9 +55,9 @@ const NewCafeLayout = ({
   const normalizePosition = (x, y) => {
     const bounds = getCoordinateBounds(localTables);
 
-    // Responsive layout dimensions using state
-    const layoutWidth = windowWidth < 640 ? 320 : 800;
-    const layoutHeight = windowWidth < 640 ? 400 : 675;
+    // Responsive layout dimensions using state - increased mobile width
+    const layoutWidth = windowWidth < 640 ? 480 : 800; // Increased from 320 to 480
+    const layoutHeight = windowWidth < 640 ? 480 : 675; // Increased from 400 to 600
 
     // Responsive table and chair sizes using state
     const tableSize = windowWidth < 640 ? 32 : 48;
@@ -233,9 +233,10 @@ const NewCafeLayout = ({
       <div
         className="relative border bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800 mx-auto"
         style={{
-          minHeight: windowWidth < 640 ? "500px" : "600px",
-          width: windowWidth < 640 ? "500px" : "800px",
-          height: windowWidth < 640 ? "400px" : "660px",
+          minHeight: windowWidth < 640 ? "600px" : "600px", // Increased mobile height
+          width: windowWidth < 640 ? "480px" : "800px", // Increased mobile width
+          height: windowWidth < 640 ? "600px" : "675px", // Increased mobile height
+          maxWidth: "100vw", // Ensure it doesn't exceed viewport
           aspectRatio: "4/3",
         }}
       >
