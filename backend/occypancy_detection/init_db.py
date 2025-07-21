@@ -38,37 +38,45 @@ class CafeLayoutDbModel(Base):
 
     def update_layout_data(self, layout_data, cafe_id):
         """
-        Update the cafe layout data for a specific cafe_id.
+        Update or insert the cafe layout data for a specific cafe_id.
 
         :param layout_data: JSON data containing the updated layout.
-        :param cafe_id: Integer ID of the cafe to update the layout for.
+        :param cafe_id: Integer ID of the cafe to update or insert the layout for.
         :raises ValueError: If layout_data is not valid JSON or is None.
-        :raises ValueError: If no CafeLayout record exists for the given cafe_id.
         :raises Exception: If database commit fails.
         """
         if layout_data is None:
             raise ValueError("layout_data cannot be None")
+
+        session = Session()
         try:
             import json
             json.dumps(layout_data)  # Validate JSON serializability
-            session = Session()
+
             cafe_layout = session.query(CafeLayoutDbModel).filter_by(cafe_id=cafe_id).first()
             if not cafe_layout:
-                session.close()
-                raise ValueError(f"No CafeLayout found for cafe_id {cafe_id}")
-            cafe_layout.model_layout_data = layout_data
-            cafe_layout.updated_at = datetime.utcnow()
-            session.add(cafe_layout)
+                # Create new entry if not exists
+                cafe_layout = CafeLayoutDbModel(
+                    cafe_id=cafe_id,
+                    model_layout_data=layout_data,
+                    updated_at=datetime.utcnow(),
+                    model_layout_updated_at=datetime.utcnow()
+                )
+                session.add(cafe_layout)
+            else:
+                # Update existing entry
+                cafe_layout.model_layout_data = layout_data
+                cafe_layout.updated_at = datetime.utcnow()
+
             session.commit()
-            session.close()
         except (TypeError, ValueError) as e:
             session.rollback()
-            session.close()
             raise ValueError(f"Invalid layout data: {str(e)}")
         except Exception as e:
             session.rollback()
+            raise Exception(f"Failed to update/insert layout data: {str(e)}")
+        finally:
             session.close()
-            raise Exception(f"Failed to update layout data: {str(e)}")
 
 # Event listeners to automatically update timestamps when layout data changes
 @event.listens_for(CafeLayoutDbModel.model_layout_data, 'set')
