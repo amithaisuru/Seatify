@@ -231,7 +231,7 @@ const NewCafeLayout = ({
   return (
     <div className="space-y-4">
       <div
-        className="relative border bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800 mx-auto"
+        className="relative border border-gray-800 bg-gray-200 rounded-md overflow-hidden dark:bg-gray-800 dark:border-gray-600 mx-auto"
         style={{
           minHeight: windowWidth < 640 ? "600px" : "600px", // Increased mobile height
           width: windowWidth < 640 ? "480px" : "800px", // Increased mobile width

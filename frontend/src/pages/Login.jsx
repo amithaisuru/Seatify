@@ -70,7 +70,7 @@ function Login() {
             navigate("/details");
           } else {
             // Admin
-            navigate("/homepage");
+            navigate("/userProfiles");
           }
         }, 1000); // Small delay so toast shows before redirect
       } else {
