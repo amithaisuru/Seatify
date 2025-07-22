@@ -126,6 +126,9 @@ class CafeLayout:
 
     def sclae_coordinates(self, width = 400, height = 400):        
         #find max x cordinate in chair or table center
+        if not self.tables and not self.chairs:
+            print("No tables or chairs to scale.")
+            return
         max_x = max(table.center[0] for table in self.tables + self.chairs)
         max_y = max(table.center[1] for table in self.tables + self.chairs)
 

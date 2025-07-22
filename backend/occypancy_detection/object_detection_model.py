@@ -103,11 +103,24 @@ def get_next_frame(after_n_mins, cap):
     print("returning frame no: ", cap.get(cv2.CAP_PROP_POS_FRAMES))
     return ret, frame
 
-cap = cv2.VideoCapture(r'HOTWOK -2-A.mp4')
-frameIndex = 0
+def get_frame_from_cam(camera_id=0):
+    """
+    Get a frame from the specified camera.
+    """
+    cap = cv2.VideoCapture(camera_id)
+    if not cap.isOpened():
+        print("Error: Could not open webcam.")
+        return None
+    ret, frame = cap.read()
+    cap.release()
+    if not ret:
+        print("Failed to capture frame.")
+        return None, None
+    return ret, frame
 
-while cap.isOpened():
-    ret, frame = get_next_frame(0.1, cap)  # Get the next frame after 1 minute
+frameIndex = 0
+while True:
+    ret, frame = get_frame_from_cam()
     if not ret:
         break
     result = det_model.track(
@@ -185,7 +198,7 @@ while cap.isOpened():
     cafe_layout.map_people_to_tables_by_distance()
     cafe_layout.analyze_occupancy()
     cafe_layout.update_databse()
-
     frameIndex += 1
-
-cap.release()
+    after_n_mins = 0.5  # Set the number of minutes to wait before capturing the next frame
+    print("sleeping...")
+    time.sleep(after_n_mins * 60)
