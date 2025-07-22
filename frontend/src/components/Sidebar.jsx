@@ -59,7 +59,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <Link
                     to="/profile"
                     onClick={() => setIsOpen(false)} // close menu after click
-                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker text-gray-100 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                   >
                     Profile
                   </Link>
@@ -68,7 +68,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <Link
                     to="/homepage"
                     onClick={() => setIsOpen(false)} // close menu after click
-                    className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-100 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                   >
                     HomePage
                   </Link>
@@ -82,7 +82,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <Link
                     to="/cafelayout"
                     onClick={() => setIsOpen(false)}
-                    className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                   >
                     Cafe Layout
                   </Link>
@@ -91,7 +91,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <Link
                     to="/analytics"
                     onClick={() => setIsOpen(false)}
-                    className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                   >
                     Analytics Dashboard
                   </Link>
@@ -100,7 +100,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <Link
                     to="/details"
                     onClick={() => setIsOpen(false)}
-                    className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                   >
                     Cafe Profile
                   </Link>
@@ -112,18 +112,9 @@ function Sidebar({ isOpen, setIsOpen }) {
               <ul>
                 <li>
                   <Link
-                    to="/homepage"
-                    onClick={() => setIsOpen(false)}
-                    className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
-                  >
-                    Homepage
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to="/userProfiles"
                     onClick={() => setIsOpen(false)} // close menu after click
-                    className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                   >
                     User Profiles
                   </Link>
@@ -132,9 +123,18 @@ function Sidebar({ isOpen, setIsOpen }) {
                   <Link
                     to="/addUsers"
                     onClick={() => setIsOpen(false)} // close menu after click
-                    className="text-sm block px-4 mb-2 py-2 bg-primary-dark dark:bg-primary-darker text-gray-800 rounded-md hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                   >
                     Add Users
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/homepage"
+                    onClick={() => setIsOpen(false)}
+                    className="text-sm block px-4 py-2 mb-2 bg-primary-dark dark:bg-primary-darker hover:text-gray-800 rounded-md text-gray-100 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  >
+                    Homepage
                   </Link>
                 </li>
               </ul>
