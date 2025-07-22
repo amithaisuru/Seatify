@@ -5,7 +5,7 @@ import jwt_decode from "jwt-decode";
 import DarkModeToggle from "../components/DarkModeToggle";
 import Toast from "../components/Toast"; // Import your Toast component
 import { BASE_URL } from "../constants/config";
-import landImage2 from "../assets/Landpage/LandPageImage3.png";
+import landImage2 from "../assets/Landpage/LandPageImage4.png";
 function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
