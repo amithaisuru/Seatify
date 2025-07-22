@@ -71,19 +71,6 @@ def hipKneeLevelCondition(kpts, crop_height):
     except:
         return 0.0
 
-def bbox_iou(box1, box2):
-    x1, y1, x2, y2 = box1
-    x1b, y1b, x2b, y2b = box2
-    xi1, yi1 = max(x1, x1b), max(y1, y1b)
-    xi2, yi2 = min(x2, x2b), min(y2, y2b)
-    inter_w = max(0, xi2 - xi1)
-    inter_h = max(0, yi2 - yi1)
-    inter = inter_w * inter_h
-    area1 = (x2 - x1) * (y2 - y1)
-    area2 = (x2b - x1b) * (y2b - y1b)
-    union = area1 + area2 - inter
-    return inter / union if union > 0 else 0
-
 def is_sitting(knee_angle, torso_angle, hip_knee_level):
     """
     Determine if a person is sitting based on the conditions.
@@ -116,21 +103,13 @@ def get_next_frame(after_n_mins, cap):
     print("returning frame no: ", cap.get(cv2.CAP_PROP_POS_FRAMES))
     return ret, frame
 
-IOU_THRESHOLD = 0.2
-
-cap = cv2.VideoCapture(r'/Users/sadeepa/Desktop/Self Study/Seatify/Input Videos/HOTWOK-Cam1 - 1.mp4')
+cap = cv2.VideoCapture(r'HOTWOK -2-A.mp4')
 frameIndex = 0
 
 while cap.isOpened():
     ret, frame = get_next_frame(0.1, cap)  # Get the next frame after 1 minute
     if not ret:
         break
-
-    # if frameIndex % (30) != 0:
-    #     frameIndex += 1
-    #     continue
-
-    # Run detection + tracking manually
     result = det_model.track(
         source=frame,
         tracker='bytetrack.yaml',
