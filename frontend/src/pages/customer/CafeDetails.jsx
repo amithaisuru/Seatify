@@ -22,7 +22,7 @@ function CafeDetails() {
   const [cafe, setCafe] = useState(null);
 
   const [tables, setTables] = useState([]);
-  const [chairs, setChairs] = useState([]);
+  const [availableSeatsCount, setAvailableSeatsCount] = useState(0);
 
   const [toast, setToast] = useState({ show: false, type: "", message: "" }); //toast messages
   const { logout } = useContext(AuthContext);
@@ -112,7 +112,7 @@ function CafeDetails() {
       if (response.ok) {
         const data = await response.json();
         setTables(data.tables);
-        // setChairs(data.chairs);
+        setAvailableSeatsCount(data.available_seats_count);
       } else {
         if (data.error === "Token has expired!") {
           console.error("Token expired. Redirecting to login...");
@@ -209,7 +209,7 @@ function CafeDetails() {
 
                 <p className="text-md mb-2 flex items-center gap-2">
                   <Users className="w-4 h-4 text-gray-500" />
-                  <strong>Seats Available:</strong> {cafe.seats_available}
+                  <strong>Seats Available:</strong> {availableSeatsCount}
                 </p>
               </div>
 
