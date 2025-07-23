@@ -187,10 +187,10 @@ while True:
         x1, y1, x2, y2 = table[1], table[2], table[3], table[4]
         cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.putText(frame_copy, f"Table {table[0]}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-    for person in cafe_layout.people:
-        x1, y1, x2, y2 = person.topLeft[0], person.topLeft[1], person.bottomRight[0], person.bottomRight[1]
-        cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
-        cv2.putText(frame_copy, f"{person.id} {person.posture}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+    if cafe_layout.people:
+        for person in cafe_layout.people:
+            x1, y1, x2, y2 = person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1]
+            cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
     # Save the annotated frame
     if not os.path.exists('annotated_frames_4'):
         os.makedirs('annotated_frames_4')
@@ -207,6 +207,6 @@ while True:
     cafe_layout.analyze_occupancy()
     cafe_layout.update_databse()
     frameIndex += 1
-    after_n_mins = 0.5  # Set the number of minutes to wait before capturing the next frame
+    after_n_mins = 0.1 # Set the number of minutes to wait before capturing the next frame
     print("sleeping...")
     time.sleep(after_n_mins * 60)
