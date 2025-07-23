@@ -137,13 +137,15 @@ while True:
     print(f"Frame_amitha {frameIndex}:")
 
     # Pull detections
-    if not result:
-        print("no objects found")
+    try:
+        boxesXYXYs = result.boxes.xyxy.cpu().numpy()
+        confs = result.boxes.conf.cpu().numpy()
+        cls_ids = result.boxes.cls.cpu().numpy().astype(int)
+        track_ids = result.boxes.id.cpu().numpy().astype(int)
+    except Exception as e:
+        print(f"Error retrieving detection results: {e}")
+        boxesXYXYs, confs, cls_ids, track_ids = [], [], [], []
         continue
-    boxesXYXYs = result.boxes.xyxy.cpu().numpy()
-    confs = result.boxes.conf.cpu().numpy()
-    cls_ids = result.boxes.cls.cpu().numpy().astype(int)
-    track_ids = result.boxes.id.cpu().numpy().astype(int)
 
     # Build a list of chairs and tables
     chair_boxes = []
