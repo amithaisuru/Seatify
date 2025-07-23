@@ -137,6 +137,9 @@ while True:
     print(f"Frame_amitha {frameIndex}:")
 
     # Pull detections
+    if not result:
+        print("no objects found")
+        continue
     boxesXYXYs = result.boxes.xyxy.cpu().numpy()
     confs = result.boxes.conf.cpu().numpy()
     cls_ids = result.boxes.cls.cpu().numpy().astype(int)
@@ -191,6 +194,7 @@ while True:
         for person in cafe_layout.people:
             x1, y1, x2, y2 = person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1]
             cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
+            
     # Save the annotated frame
     if not os.path.exists('annotated_frames_4'):
         os.makedirs('annotated_frames_4')
