@@ -152,3 +152,8 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-07-18 19:43:50
+
+
+
+ALTER TABLE `seatify`.`cafelayout` 
+ADD COLUMN `reserved_table_ids` JSON NULL AFTER `model_layout_updated_at`;

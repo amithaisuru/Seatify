@@ -14,101 +14,6 @@ cafeLayout_bp = Blueprint('cafeLayout', __name__)
 # Get cafe layout information
 @cafeLayout_bp.route('/cafeLayout', methods=['GET'])
 @jwt_required()
-# def get_cafeLayout():
-#     try:
-#         cafe_id = get_jwt_identity()
-#         print("Cafe ID:", cafe_id)
-#         # get cafe where owner_id=cafe_id
-#         cafe = Cafe.query.filter_by(owner_id=cafe_id).first()
-#         if not cafe:
-#             return jsonify({"error": "Cafe not found"}), 404
-
-#         # Hardcoded values for layout display
-#         # tables = [
-#         #     { "x": 100, "y": 80, "label": "T1" },
-#         #     { "x": 300, "y": 80, "label": "T2" }
-#         # ]
-
-#         # chairs = [
-#         #     { "x": 80, "y": 60, "label": "C1", "status": "available" },
-#         #     { "x": 150, "y": 60, "label": "C2", "status": "occupied" },
-#         #     { "x": 80, "y": 120, "label": "C3", "status": "available" },
-#         #     { "x": 170, "y": 90, "label": "C13", "status": "available" },
-#         #     { "x": 160, "y": 130, "label": "C4", "status": "available" },
-#         #     { "x": 130, "y": 150, "label": "C5", "status": "occupied" },
-#         #     { "x": 280, "y": 60, "label": "C10", "status": "available" },
-#         #     { "x": 320, "y": 60, "label": "C6", "status": "occupied" },
-#         #     { "x": 360, "y": 80, "label": "C11", "status": "occupied" },
-#         #     { "x": 370, "y": 110, "label": "C9", "status": "occupied" },
-#         #     { "x": 280, "y": 120, "label": "C7", "status": "available" },
-#         #     { "x": 350, "y": 140, "label": "C8", "status": "available" },
-#         #     { "x": 310, "y": 140, "label": "C12", "status": "available" },
-#         # ]
-
-#         tables=[]
-#         chairs=[]
-
-#         # Fetch layout from the database
-#         layout = CafeLayout.query.filter_by(cafe_id=cafe.id).first()
-#         if layout:
-#             # Debug: Print timestamp values
-#             print(f"cafe_layout_updated_at: {layout.cafe_layout_updated_at}")
-#             print(f"model_layout_updated_at: {layout.model_layout_updated_at}")
-            
-#             if layout.cafe_layout_data and layout.model_layout_data:
-#                 # Compare timestamps and take the latest one
-#                 # Handle case where timestamps might be None
-#                 cafe_timestamp = layout.cafe_layout_updated_at
-#                 model_timestamp = layout.model_layout_updated_at
-                
-#                 if cafe_timestamp and model_timestamp:
-#                     # Both timestamps exist, compare them
-#                     if cafe_timestamp < model_timestamp:
-#                         print("Using cafe_layout_data (newer)")
-#                         tables = layout.cafe_layout_data.get('tables', [])
-#                         chairs = layout.cafe_layout_data.get('chairs', [])
-#                     else:
-#                         print("Using model_layout_data (newer)")
-#                         tables = layout.model_layout_data.get('tables', [])
-#                         chairs = layout.model_layout_data.get('chairs', [])
-#                 elif cafe_timestamp:
-#                     # Only cafe timestamp exists
-#                     print("Using cafe_layout_data (only cafe timestamp exists)")
-#                     tables = layout.cafe_layout_data.get('tables', [])
-#                     chairs = layout.cafe_layout_data.get('chairs', [])
-#                 elif model_timestamp:
-#                     # Only model timestamp exists
-#                     print("Using model_layout_data (only model timestamp exists)")
-#                     tables = layout.model_layout_data.get('tables', [])
-#                     chairs = layout.model_layout_data.get('chairs', [])
-#                 else:
-#                     # No timestamps, default to cafe_layout_data
-#                     print("Using cafe_layout_data (no timestamps)")
-#                     tables = layout.cafe_layout_data.get('tables', [])
-#                     chairs = layout.cafe_layout_data.get('chairs', [])
-#             elif layout.cafe_layout_data:
-#                 print("Using cafe_layout_data (only cafe data exists)")
-#                 tables = layout.cafe_layout_data.get('tables', [])
-#                 chairs = layout.cafe_layout_data.get('chairs', [])
-#             elif layout.model_layout_data:
-#                 print("Using model_layout_data (only model data exists)")
-#                 tables = layout.model_layout_data.get('tables', [])
-#                 chairs = layout.model_layout_data.get('chairs', [])
-                
-#         else:
-#             return jsonify({"error": "Layout not found"}), 404
-
-#         return jsonify({
-#                     # "cafe_id": cafe_id,
-#                     "tables": tables,
-#                     "chairs": chairs
-#                 }), 200
-
-#     except SQLAlchemyError as e:
-#         return jsonify({"error": "Database error", "message": str(e)}), 500
-
-#     except Exception as e:
-#         return jsonify({"error": "Unexpected error", "message": str(e)}), 500
 def get_cafeLayout():
     try:
         cafe_id = get_jwt_identity()
@@ -190,6 +95,46 @@ def get_cafeLayout():
         else:
             return jsonify({"error": "Layout not found"}), 404
 
+        # then check whether any of table_id in tables is match with ids in "reserved_table_ids" in table. if so then check the the "expired_time" is greater than current time, if so then set status="reserved" else set status="available corresponding tables in tables(which is going to return)
+
+        if layout.reserved_table_ids:
+            reserved_table_ids = layout.reserved_table_ids.get('reserved_table_ids', [])
+            expired_time = layout.reserved_table_ids.get('expired_time')
+            if expired_time:
+                try:
+                    expired_time = datetime.datetime.fromisoformat(expired_time)
+                except ValueError:
+                    expired_time = None
+            
+            current_time = datetime.datetime.now()
+            print("Current time:", current_time)
+            print("expired_time:", expired_time)
+            # print("tables before update: ",tables)
+            for table in tables:
+                if table.get('tabel_id') in reserved_table_ids:
+                    print(f"Table {table.get('tabel_id')} is in reserved list")
+                    print(f"expired_time: {expired_time}, type: {type(expired_time)}")
+                    print(f"current_time: {current_time}, type: {type(current_time)}")
+                    
+                    if expired_time is not None and current_time < expired_time:
+                        print("00000000000000000000000000 current time< expired_time")
+                        table['status'] = 'reserved'
+                        print("table",table)
+                    else:
+                        print("00000000000000000000000000 current time >= expired_time OR expired_time is None")
+                        table['status'] = 'available'
+                        print("table",table)
+                        # update reserved_table_ids to None
+                        layout.reserved_table_ids = {
+                            "reserved_table_ids": "",
+                            "expired_time": ""
+                        }
+                        # commit the changes
+                        db.session.commit()
+                        
+
+            print("Updated table statuses:", tables)
+
         return jsonify({
                     "tables": tables,
                 }), 200
@@ -242,12 +187,9 @@ def save_layout():
         tables = data.get('tables', [])
         # chairs = data.get('chairs', [])
 
-        print('tables', tables)
-        # print('chairs', chairs)
+        # print('tables', tables)
 
-        # Calculate number of available chairs
-        # available_chairs = sum(1 for chair in chairs if chair.get('status') == 'available')
-        # print('available_chairs', available_chairs)
+        
 
         if not tables:
             return jsonify({"error": "Missing layout data"}), 400
@@ -268,6 +210,17 @@ def save_layout():
                 "tables": tables,
                 "timestamp": datetime.datetime.now().isoformat()
             }
+
+            # get table ids where status="reserved" from tables
+            reserved_table_ids = [table.get('tabel_id') for table in tables if table.get('status') == 'reserved'] 
+
+            layout.reserved_table_ids = {
+                "reserved_table_ids": reserved_table_ids,
+            # expire after 2 mins
+                "expired_time": (datetime.datetime.now() + datetime.timedelta(minutes=2)).isoformat()
+            }
+
+            print('reserved_table_ids', reserved_table_ids)
         else:
             # Create a new layout record - don't set model_layout_data unless needed
             layout = CafeLayout(

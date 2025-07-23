@@ -42,6 +42,9 @@ class CafeLayout(db.Model):
     # General timestamp for the record
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Stores reserved table IDs and their expiration time
+    reserved_table_ids = db.Column(db.JSON, nullable=True)
+
     # Define relationship to Cafe model
     cafe = db.relationship('Cafe', backref=db.backref('layouts', lazy=True))
 

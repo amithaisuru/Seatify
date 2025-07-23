@@ -71,7 +71,8 @@ def get_seats_by_cafe_id(cafe_id):
         if not cafe:
             return jsonify({"error": "Cafe not found"}), 404
 
-        tables=[]
+        tables = []
+        available_seats_count = 0
 
         # Fetch layout from the database
         layout = CafeLayout.query.filter_by(cafe_id=cafe.id).first()
@@ -124,13 +125,18 @@ def get_seats_by_cafe_id(cafe_id):
                     if 'status' not in table:
                         table['status'] = 'available'
                 
+            # Calculate available seats count
+            available_seats_count = calculate_available_seats(tables)
+                
         else:
             return jsonify({"error": "Layout not found"}), 404
 
+        print("available_seats_count:", available_seats_count)
         return jsonify({
-                    "cafe_id": cafe_id,
-                    "tables": tables,
-                }), 200
+            "cafe_id": cafe_id,
+            "tables": tables,
+            "available_seats_count": available_seats_count
+        }), 200
 
     except SQLAlchemyError as e:
         return jsonify({"error": "Database error", "message": str(e)}), 500
@@ -167,3 +173,21 @@ def update_table_statuses(model_tables, cafe_tables):
         updated_tables.append(table_copy)
     
     return updated_tables
+
+def calculate_available_seats(tables):
+    """
+    Calculate the total number of available seats across all tables
+    """
+    available_count = 0
+    print('tables:', tables)
+    for table in tables:
+        # Only count seats from tables that are available
+        if table.get('status') == 'available':
+            chair_count = table.get('chair_count', 0)
+            seated_persons_count = table.get('seated_persons_count', 0)
+            # Available seats = total chairs - seated persons
+            table_available_seats = chair_count - seated_persons_count
+            available_count += table_available_seats
+            print(f"Table {table.get('tabel_id')}: {chair_count} chairs, {seated_persons_count} seated, {table_available_seats} available")
+    
+    return available_count
