@@ -67,7 +67,7 @@ function Login() {
             navigate("/homepage");
           } else if (userType === 2) {
             // Cafe Owner
-            navigate("/details");
+            navigate("/cafelayout");
           } else {
             // Admin
             navigate("/userProfiles");
