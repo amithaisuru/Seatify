@@ -110,8 +110,6 @@ class CafeLayout:
         layout_data = {
             "tables": [],
             "timestamp": datetime.now().isoformat(),
-            "chairs_without_tables" : [],
-            "seated_person_count" : self.get_seated_people_count()
         }        
         for table in self.tables:
             center_x = float(table.center[0]) if isinstance(table.center[0], (np.integer, np.floating)) else table.center[0]
@@ -127,19 +125,15 @@ class CafeLayout:
                 "assigned_people_IDs": table.get_person_id_list(),
             })
             layout_data["timestamp"] = datetime.now().isoformat()  # Update timestamp for each table
-        for chair in self.chairs:
-            center_x = float(chair.center[0]) if isinstance(chair.center[0], (np.integer, np.floating)) else chair.center[0]
-            center_y = float(chair.center[1]) if isinstance(chair.center[1], (np.integer, np.floating)) else chair.center[1]
-            layout_data["chairs_without_tables"].append({
-                "chair_id": f"C{chair.id}",
-                "x": center_x,
-                "y": center_y
-            })
+
         print("layout data inside update database---------------------------------------------")
         print(layout_data)
         print("---------------------------------------------------------------------------------")
-        cafe_layout_db_handler = CafeLayoutDbModel()
-        cafe_layout_db_handler.update_layout_data(layout_data,3)
+        if layout_data:
+            cafe_layout_db_handler = CafeLayoutDbModel()
+            cafe_layout_db_handler.update_layout_data(layout_data,3)
+        else:
+            print("No layout data to update in the database.")
 
     def sclae_coordinates(self, width = 400, height = 400):        
         #find max x cordinate in chair or table center
