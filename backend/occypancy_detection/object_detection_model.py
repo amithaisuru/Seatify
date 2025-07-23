@@ -189,16 +189,25 @@ while cap.isOpened():
             text = f"{posture} {conf:.2f} ID:{track_id}"
             cafe_layout.add_person(track_id, (x1, y1), (x2, y2), posture)
 
-    # Draw annotations
-    for people in cafe_layout.people:
-        x1, y1 = people.top_left
-        x2, y2 = people.bottom_right
-        color1 = (0, 255, 0) if people.is_sitting else (0, 0, 255)
-        text = f"{people.is_sitting} ID:{people.id}"
-        cv2.rectangle(frame_copy, (x1, y1), (x2, y2), color1, 2)
-        cv2.putText(frame_copy, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color1, 2)
-
-    annotated_frame_path = os.path.join('annotated_frames_4', f'frame_{frameIndex}.jpg')
+    ## Draw annotations(tables, chairs, peoples)
+    for chair in chair_boxes:
+        x1, y1, x2, y2 = chair[1], chair[2], chair[3], chair[4]
+        cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (255, 0, 0), 2)
+        cv2.putText(frame_copy, f"Chair {chair[0]}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+    for table in table_boxes:
+        x1, y1, x2, y2 = table[1], table[2], table[3], table[4]
+        cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv2.putText(frame_copy, f"Table {table[0]}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    if cafe_layout.people:
+        for person in cafe_layout.people:
+            x1, y1, x2, y2 = person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1]
+            cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
+            
+    # Save the annotated frame
+    if not os.path.exists('annotated_frames_video'):
+        os.makedirs('annotated_frames_video')
+    # Save the annotated frame with a unique name
+    annotated_frame_path = os.path.join('annotated_frames_video', f'frame_{frameIndex}.jpg')
     cv2.imwrite(annotated_frame_path, frame_copy)
 
     cafe_layout.read_chair_list(chair_boxes)

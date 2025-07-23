@@ -196,10 +196,10 @@ while True:
             cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
             
     # Save the annotated frame
-    if not os.path.exists('annotated_frames_4'):
-        os.makedirs('annotated_frames_4')
+    if not os.path.exists('annotated_frames_cam'):
+        os.makedirs('annotated_frames_cam')
     # Save the annotated frame with a unique name
-    annotated_frame_path = os.path.join('annotated_frames_4', f'frame_{frameIndex}.jpg')
+    annotated_frame_path = os.path.join('annotated_frames_cam', f'frame_{frameIndex}.jpg')
     cv2.imwrite(annotated_frame_path, frame_copy)
 
     cafe_layout.read_chair_list(chair_boxes)
