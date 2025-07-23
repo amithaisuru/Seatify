@@ -192,8 +192,10 @@ while True:
         cv2.putText(frame_copy, f"Table {table[0]}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     if cafe_layout.people:
         for person in cafe_layout.people:
-            x1, y1, x2, y2 = person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1]
-            cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
+            if person.is_sitting:
+                x1, y1, x2, y2 = person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1]
+                cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
+                cv2.putText(frame_copy, f"Person {person.id} Sitting", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
             
     # Save the annotated frame
     if not os.path.exists('annotated_frames_cam'):

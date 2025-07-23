@@ -118,17 +118,13 @@ def get_next_frame(after_n_mins, cap):
 
 IOU_THRESHOLD = 0.2
 
-cap = cv2.VideoCapture(r'/Users/sadeepa/Desktop/Self Study/Seatify/Input Videos/HOTWOK-Cam1 - 1.mp4')
+cap = cv2.VideoCapture(r'HOTWOK -2-A.mp4')
 frameIndex = 0
 
 while cap.isOpened():
     ret, frame = get_next_frame(0.1, cap)  # Get the next frame after 1 minute
     if not ret:
         break
-
-    # if frameIndex % (30) != 0:
-    #     frameIndex += 1
-    #     continue
 
     # Run detection + tracking manually
     result = det_model.track(
@@ -200,8 +196,10 @@ while cap.isOpened():
         cv2.putText(frame_copy, f"Table {table[0]}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
     if cafe_layout.people:
         for person in cafe_layout.people:
-            x1, y1, x2, y2 = person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1]
-            cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
+            if person.is_sitting:
+                x1, y1, x2, y2 = person.top_left[0], person.top_left[1], person.bottom_right[0], person.bottom_right[1]
+                cv2.rectangle(frame_copy, (x1, y1), (x2, y2), (0, 255, 255), 2)
+                cv2.putText(frame_copy, f"Person {person.id} Sitting", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
             
     # Save the annotated frame
     if not os.path.exists('annotated_frames_video'):
