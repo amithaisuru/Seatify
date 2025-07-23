@@ -145,6 +145,9 @@ while cap.isOpened():
     print(f"Frame_amitha {frameIndex}:")
 
     # Pull detections
+    if not result:
+        print("no objects found")
+        continue
     boxesXYXYs = result.boxes.xyxy.cpu().numpy()
     confs = result.boxes.conf.cpu().numpy()
     cls_ids = result.boxes.cls.cpu().numpy().astype(int)
