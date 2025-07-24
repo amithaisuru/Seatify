@@ -240,7 +240,7 @@ const NewCafeLayout = ({
           aspectRatio: "4/3",
         }}
       >
-        {/* Tables */}
+        {/* tatables  */}
         {localTables.map((table, tableIndex) => {
           const tableSize = getResponsiveSize(48, 32);
           const position = normalizePosition(table.x, table.y);

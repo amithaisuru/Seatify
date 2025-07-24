@@ -107,7 +107,7 @@ function Sidebar({ isOpen, setIsOpen }) {
                 </li>
               </ul>
             )}
-            {/*admin*/}
+            {/*admi    n*/}
             {user.user_type === 3 && (
               <ul>
                 <li>

@@ -240,7 +240,7 @@ function CafeDetails() {
             </div>
           </div>
 
-          {/* cafe layout */}
+          {/* cafe layout   */}
           <div className="w-full max-w-[100%] overflow-auto">
             {/* <CafeLayout tables={tables} chairs={chairs} /> */}
             <NewCafeLayout tables={tables} editable={false} />
