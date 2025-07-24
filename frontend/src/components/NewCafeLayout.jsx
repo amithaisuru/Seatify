@@ -319,7 +319,7 @@ const NewCafeLayout = ({
             disabled={saving}
             className="px-3 py-2 sm:px-4 bg-primary-dark hover:bg-primary-light text-white rounded-md transition text-sm sm:text-base"
           >
-            {saving ? "Saving..." : "Save Layout"}
+            {saving ? "Saving..." : "Make a Reservation"}
           </button>
           {message && (
             <div
