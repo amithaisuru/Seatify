@@ -240,6 +240,36 @@ function CafeDetails() {
             </div>
           </div>
 
+          {/* cafe layout */}
+          <div className="w-full max-w-[100%] overflow-auto">
+            {/* <CafeLayout tables={tables} chairs={chairs} /> */}
+            <NewCafeLayout tables={tables} editable={false} />
+          </div>
+          {/* Call to Make a Reservation Button */}
+          <div className="flex items-center gap-4">
+            <a
+              // href={`tel:${cafe.contact_number}`}
+              className="inline-block mt-2 px-4 py-2 bg-primary-dark text-white rounded shadow hover:bg-primary-light transition-colors duration-200"
+              style={{ textDecoration: "none" }}
+            >
+              Call to Make a Reservation
+            </a>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 rounded-sm h-4 bg-red-500" />
+                <span>Occupied Chair</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 rounded-sm h-4 bg-green-500" />
+                <span>Available Chair</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 rounded-sm h-4 bg-blue-500" />
+                <span>Reserved Chair</span>
+              </div>
+            </div>
+          </div>
+
           {/* Display menus */}
           <div className="mt-4 ">
             <h2 className="text-lg font-bold text-primary-dark mb-4">Menu</h2>
@@ -276,34 +306,6 @@ function CafeDetails() {
             <h2 className="text-lg font-bold text-primary-dark mb-4">
               Seat Map
             </h2>
-          </div>
-          <div className="w-full max-w-[100%] overflow-auto">
-            {/* <CafeLayout tables={tables} chairs={chairs} /> */}
-            <NewCafeLayout tables={tables} editable={false} />
-          </div>
-          {/* Call to Make a Reservation Button */}
-          <div className="flex items-center gap-4">
-            <a
-              // href={`tel:${cafe.contact_number}`}
-              className="inline-block mt-2 px-4 py-2 bg-primary-dark text-white rounded shadow hover:bg-primary-light transition-colors duration-200"
-              style={{ textDecoration: "none" }}
-            >
-              Call to Make a Reservation
-            </a>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-4 rounded-sm h-4 bg-red-500" />
-                <span>Occupied Chair</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 rounded-sm h-4 bg-green-500" />
-                <span>Available Chair</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 rounded-sm h-4 bg-blue-500" />
-                <span>Reserved Chair</span>
-              </div>
-            </div>
           </div>
         </main>
       </div>
