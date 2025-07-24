@@ -106,7 +106,9 @@ class CafeLayout:
         root.mainloop()
       
     def update_databse(self):
-        self.sclae_coordinates(400, 400)  # Scale coordinates to fit in a 800x800 canvas
+        if not self.sclae_coordinates(400, 400):  # Scale coordinates to fit in a 800x800 canvas
+            print("Database not updated: no tables detected")
+            return False
         layout_data = {
             "tables": [],
             "timestamp": datetime.now().isoformat(),
@@ -131,12 +133,16 @@ class CafeLayout:
         print("---------------------------------------------------------------------------------")
         if layout_data:
             cafe_layout_db_handler = CafeLayoutDbModel()
-            cafe_layout_db_handler.update_layout_data(layout_data,3)
+            cafe_layout_db_handler.update_layout_data(layout_data,13)
         else:
             print("No layout data to update in the database.")
+            return False
+        return True
 
     def sclae_coordinates(self, width = 400, height = 400):        
         #find max x cordinate in chair or table center
+        if not self.tables:
+            return False
         max_x = max(table.center[0] for table in self.tables + self.chairs)
         max_y = max(table.center[1] for table in self.tables + self.chairs)
 
@@ -150,6 +156,8 @@ class CafeLayout:
         
         for chair in self.chairs:
             chair.center = (chair.center[0] * scale_x, chair.center[1] * scale_y)
+        
+        return True
 
     def map_chairs_to_tables_by_distance(self):
         print("map chair to tables by distance called")

@@ -4,6 +4,7 @@ import time
 import cv2
 import numpy as np
 from cafeLayout import CafeLayout
+from chrome_refres import setup_split_screen_and_screenshot
 from ultralytics import YOLO
 
 # Load models onto GPU
@@ -106,6 +107,7 @@ def get_next_frame(after_n_mins, cap):
     """
     fps = cap.get(cv2.CAP_PROP_FPS)
     frame_count = int(fps * 60 * after_n_mins)
+    frame, ret=None, None
     for _ in range(frame_count):
         ret, frame = cap.read()
         if not ret:
@@ -118,7 +120,7 @@ def get_next_frame(after_n_mins, cap):
 
 IOU_THRESHOLD = 0.2
 
-cap = cv2.VideoCapture(r'HOTWOK -2-A.mp4')
+cap = cv2.VideoCapture(r'canteen_edited.mp4')
 frameIndex = 0
 
 while cap.isOpened():
@@ -218,6 +220,7 @@ while cap.isOpened():
     cafe_layout.map_people_to_tables_by_distance()
     cafe_layout.analyze_occupancy()
     cafe_layout.update_databse()
+    setup_split_screen_and_screenshot(frame_copy)
 
     frameIndex += 1
 

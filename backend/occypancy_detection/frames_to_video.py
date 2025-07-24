@@ -21,6 +21,6 @@ def generate_video(folder_name):
     return 0
 
 if __name__ == "__main__":
-    folder_name = "annotated_frames"  # Folder containing the images
+    folder_name = "screenshots"  # Folder containing the images
     generate_video(folder_name)
     print(f"Video generated successfully from images in {folder_name}.mp4")
