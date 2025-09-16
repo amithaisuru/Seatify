@@ -6,13 +6,21 @@ This solution addresses the common problem :
 Key Features:
 
 🌐Real-Time Seat Availability: View live seat status at cafes/restaurants.
+
 🌐Interactive Seat Layout: Visual seating map to identify available spots.
+
 🌐Dynamic Layout Updates: Automatically adapts to changes in seat arrangements.
+
 🌐Location-Based Search: Find nearby registered venues easily.
+
 🌐Occupancy Detection: Uses CCTV footage and computer vision to detect occupied seats.
+
 🌐Responsive Web App: Accessible across devices (desktop, tablet, mobile).
+
 🌐Role-Based Access: Separate dashboards for customers and cafe owners.
+
 🌐Analytics Dashboard: Insights for cafe owners on demand trends and peak hours.
+
 🌐Reservation Management: Allow cafes to manage bookings and let customers call directly for reservations.
 
 By combining computer vision with intuitive UI/UX, Seatify solves a real-world problem for both customers and business owners, bringing efficiency and transparency to the dining experience.
