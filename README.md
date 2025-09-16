@@ -5,7 +5,7 @@ This solution addresses the common problem :
 
 Key Features:
 
-🌐Real-Time Seat Availability: View live seat status at cafes/restaurants.
+🌐Real-Time Seat Availability: View live seat status at cafes/restaurants./n
 🌐Interactive Seat Layout: Visual seating map to identify available spots.
 🌐Dynamic Layout Updates: Automatically adapts to changes in seat arrangements.
 🌐Location-Based Search: Find nearby registered venues easily.
