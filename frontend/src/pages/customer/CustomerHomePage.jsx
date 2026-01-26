@@ -171,6 +171,7 @@ function CustomerHome() {
     const matchesSearch =
       cafe.cafe_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       cafe.location.name.toLowerCase().includes(searchQuery.toLowerCase());
+
     const matchesAvailability = filterAvailable
       ? cafe.seats_available > 0
       : true;

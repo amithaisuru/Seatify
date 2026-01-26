@@ -19,57 +19,6 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @signup_bp.route('/signup', methods=['POST'])
-# def signup():
-#     try:
-#         data = request.get_json()
-#         print("Received data:", data)  # Debug log
-
-#         # Validate input
-#         if not data or not data.get('email') or not data.get('password') or not data.get('user_type'):
-#             return jsonify({"error": "Missing required fields (email, password, user_type)"}), 400
-
-#         # Check if user already exists
-#         existing_user = User.query.filter_by(email=data['email']).first()
-#         if existing_user:
-#             return jsonify({"error": "User already exists"}), 409  # 409 Conflict
-
-#         # Hash the password before saving
-#         hashed_password = generate_password_hash(data['password'])
-
-#         # Create new user
-#         new_user = User(
-#             email=data['email'],
-#             password=hashed_password,
-#             user_type=data['user_type']
-#         )
-
-#         db.session.add(new_user)
-#         db.session.commit()
-
-#         # ✅ If user is a Cafe owner (user_type == 2), create a Cafe
-#         if new_user.user_type == 2:
-#             # Validate cafe fields
-#             if not data.get('cafe_name') or not data.get('location') or not data.get('contact_number'):
-#                 return jsonify({"error": "Missing cafe details (cafe_name, location, contact_number)"}), 400
-
-#             new_cafe = Cafe(
-#                 owner_id=new_user.id,
-#                 cafe_name=data['cafe_name'],
-#                 location_id=data['location'],
-#                 contact_number=data['contact_number']
-#             )
-
-#             db.session.add(new_cafe)
-#             db.session.commit()
-
-#         return jsonify({"message": "User created successfully"}), 200
-
-#     except SQLAlchemyError as e:
-#         db.session.rollback()
-#         return jsonify({"error": "Database error", "message": str(e)}), 500
-
-#     except Exception as e:
-#         return jsonify({"error": "Signup failed", "message": str(e)}), 500
 def signup():
     try:
         if request.content_type.startswith('multipart/form-data'):
@@ -89,6 +38,7 @@ def signup():
         if User.query.filter_by(email=email).first():
             return jsonify({"error": "User already exists"}), 409
 
+        # hash the password
         hashed_password = generate_password_hash(password)
         new_user = User(email=email, password=hashed_password, user_type=user_type)
         db.session.add(new_user)

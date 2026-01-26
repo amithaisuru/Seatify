@@ -9,6 +9,7 @@ const NewCafeLayout = ({
   width = 100,
   height = 60,
   editable = false,
+  customer = false,
   fetchCafeLayout,
 }) => {
   const { token } = useContext(AuthContext);
@@ -16,8 +17,10 @@ const NewCafeLayout = ({
   const [saving, setSaving] = useState(false);
   const [localTables, setLocalTables] = useState(tables || []);
   const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 800
+    typeof window !== "undefined" ? window.innerWidth : 800,
   );
+  const [showModal, setShowModal] = useState(false);
+  const [reservationTimes, setReservationTimes] = useState({});
 
   // Handle window resize
   useEffect(() => {
@@ -105,12 +108,12 @@ const NewCafeLayout = ({
       if (newStatus === "occupied" && chair.status === "available") {
         newTables[tableIndex].seated_persons_count = Math.min(
           newTables[tableIndex].seated_persons_count + 1,
-          newTables[tableIndex].chair_count
+          newTables[tableIndex].chair_count,
         );
       } else if (newStatus === "available" && chair.status === "occupied") {
         newTables[tableIndex].seated_persons_count = Math.max(
           newTables[tableIndex].seated_persons_count - 1,
-          0
+          0,
         );
       }
 
@@ -228,6 +231,142 @@ const NewCafeLayout = ({
     }
   };
 
+  // New saveTables2 function
+  // const saveTables2 = async () => {
+  //   // Example: send reservedTables and reservationTimes to backend
+  //   try {
+  //     // const response = await fetch(`${BASE_URL}/makeReservation`, {
+  //     //   method: "POST",
+  //     //   headers: {
+  //     //     "Content-Type": "application/json",
+  //     //     Authorization: `Bearer ${token}`,
+  //     //   },
+  //     //   body: JSON.stringify({
+  //     //     reservations: reservedTables.map((table) => ({
+  //     //       table_id: table.table_id,
+  //     //       from: reservationTimes[table.table_id]?.from,
+  //     //       to: reservationTimes[table.table_id]?.to,
+  //     //     })),
+  //     //   }),
+  //     // });
+  //     const response = await fetch(`${BASE_URL}/cafeLayoutUpdate`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({
+  //         tables: localTables,
+  //       }),
+  //     });
+  //     if (response.ok) {
+  //       setMessage("Reservation successful!");
+  //       setShowModal(false);
+  //       fetchCafeLayout();
+  //     } else {
+  //       setMessage("Reservation failed.");
+  //     }
+  //   } catch (error) {
+  //     setMessage(`Error: ${error.message}`);
+  //   }
+  // };
+
+  // ...existing code...
+  const saveTables2 = async () => {
+    if (!editable || saving) return;
+
+    setSaving(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`${BASE_URL}/cafeLayoutUpdate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          tables: localTables,
+        }),
+      });
+
+      if (response.ok) {
+        setMessage("Layout saved successfully!");
+        setTimeout(() => {
+          setMessage("");
+          fetchCafeLayout(); // Refresh layout after saving
+        }, 1000);
+        // Refresh the layout data
+      } else {
+        const data = await response.json();
+        if (data.error === "Token has expired!") {
+          console.error("Token expired. Redirecting to login...");
+          setMessage("Token expired. Please log in again.");
+          delayLogout(); // Call the delayLogout function
+        } else if (data.error === "Authorization header is missing!") {
+          console.error("No token found. Redirecting to login...");
+          setMessage("No token found. Please log in again.");
+          delayLogout(); // Call the delayLogout function
+        } else if (data.error === "Invalid token!") {
+          console.error("Invalid token found. Redirecting to login...");
+          setMessage("Invalid token. Please log in again.");
+          delayLogout(); // Call the delayLogout function
+        } else {
+          // Handle other errors
+          setMessage("Failed to save layout. Please try again.");
+          console.error("Failed to fetch user profile details:", data.error);
+        }
+      }
+    } catch (error) {
+      setMessage(`Error saving layout: ${error.message}`);
+    } finally {
+      setShowModal(false); // <-- Close modal after reservation
+      setMessage("Reservation successful!");
+      setSaving(false);
+    }
+  };
+  // ...existing code...
+
+  // Find reserved tables
+  const reservedTables = localTables.filter((t) => t.status === "reserved");
+
+  // Handle time change
+  const handleTimeChange = (tableId, type, value) => {
+    setReservationTimes((prev) => ({
+      ...prev,
+      [tableId]: {
+        ...prev[tableId],
+        [type]: value,
+      },
+    }));
+  };
+
+  const hasSetDefaults = useRef(false);
+
+  useEffect(() => {
+    if (showModal && reservedTables.length > 0 && !hasSetDefaults.current) {
+      const now = new Date();
+      const pad = (n) => n.toString().padStart(2, "0");
+      const fromTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const toDate = new Date(now.getTime() + 30 * 60000);
+      const toTime = `${pad(toDate.getHours())}:${pad(toDate.getMinutes())}`;
+
+      // Set default times for each reserved table
+      const defaults = {};
+      reservedTables.forEach((table) => {
+        defaults[table.table_id] = {
+          from: fromTime,
+          to: toTime,
+        };
+      });
+      setReservationTimes(defaults);
+      hasSetDefaults.current = true;
+    }
+    if (!showModal) {
+      hasSetDefaults.current = false;
+    }
+  }, [showModal, reservedTables]);
+
   return (
     <div className="space-y-4">
       <div
@@ -259,8 +398,8 @@ const NewCafeLayout = ({
                         table.status === "reserved"
                           ? "bg-blue-500 hover:bg-blue-600"
                           : chair.status === "occupied"
-                          ? "bg-red-500 hover:bg-red-600"
-                          : "bg-green-500 hover:bg-green-600"
+                            ? "bg-red-500 hover:bg-red-600"
+                            : "bg-green-500 hover:bg-green-600"
                       }
                       ${
                         editable ? "cursor-pointer" : "cursor-default"
@@ -310,17 +449,24 @@ const NewCafeLayout = ({
           );
         })}
       </div>
-
       {/* Save button and message - responsive */}
       {editable && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-          <button
-            onClick={saveTables}
+        <div className="flex items-center gap-4">
+          {customer && (
+            <a
+              // href={`tel:${cafe.contact_number}`}
+              className="px-3 py-2 sm:px-4 bg-primary-dark hover:bg-primary-light text-white rounded-md transition text-sm sm:text-base"
+            >
+              Make a Call
+            </a>
+          )}
+          {/* <button
+            onClick={() => setShowModal(true)}
             disabled={saving}
             className="px-3 py-2 sm:px-4 bg-primary-dark hover:bg-primary-light text-white rounded-md transition text-sm sm:text-base"
           >
-            {saving ? "Saving..." : "Make Reservation"}
-          </button>
+            Make Reservation
+          </button> */}
           {message && (
             <div
               className={`text-xs sm:text-sm ${
@@ -330,6 +476,18 @@ const NewCafeLayout = ({
               }`}
             >
               {message}
+            </div>
+          )}
+
+          {editable && (
+            <div className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-0 sm:ml-4">
+              <span className="hidden sm:inline">
+                Click on chairs to toggle occupied/available • Click on tables
+                to toggle reservation
+              </span>
+              <span className="sm:hidden">
+                Tap chairs/tables to toggle status
+              </span>
             </div>
           )}
 
@@ -348,18 +506,240 @@ const NewCafeLayout = ({
               <span>Reserved</span>
             </div>
           </div>
-
-          {editable && (
-            <div className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-0 sm:ml-4">
-              <span className="hidden sm:inline">
-                Click on chairs to toggle occupied/available • Click on tables
-                to toggle reservation
-              </span>
-              <span className="sm:hidden">
-                Tap chairs/tables to toggle status
-              </span>
+        </div>
+      )}
+      {/* Modal for reservation */}
+      {/* Modal for reservation */}
+      {/* {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-lg max-w-md w-full relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <div className="text-lg font-bold mb-4">Reserve Tables</div>
+            {reservedTables.length === 0 ? (
+              <div className="text-gray-600 mb-4">
+                No tables selected for reservation.
+              </div>
+            ) : (
+              reservedTables.map((table) => (
+                <div key={table.table_id} className="mb-4">
+                  <div className="font-semibold mb-2">
+                    Table {table.tabel_id}
+                  </div>
+                  <div className="flex gap-2">
+                    <label>
+                      From:
+                      <input
+                        type="time"
+                        value={reservationTimes[table.table_id]?.from || ""}
+                        onChange={(e) =>
+                          handleTimeChange(
+                            table.table_id,
+                            "from",
+                            e.target.value
+                          )
+                        }
+                        className="ml-2 border rounded px-2 py-1"
+                      />
+                    </label>
+                    <label>
+                      To:
+                      <input
+                        type="time"
+                        value={reservationTimes[table.table_id]?.to || ""}
+                        onChange={(e) =>
+                          handleTimeChange(table.table_id, "to", e.target.value)
+                        }
+                        className="ml-2 border rounded px-2 py-1"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))
+            )}
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveTables2}
+                className="px-3 py-1 rounded bg-primary-dark text-white"
+                disabled={reservedTables.length === 0}
+              >
+                Submit Reservation
+              </button>
             </div>
-          )}
+          </div>
+        </div>
+      )} */}
+      {/* {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-lg max-w-md w-full relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <div className="text-lg font-bold mb-4">Reserve Tables</div>
+            <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+              Today: {new Date().toLocaleDateString()}
+            </div>
+            {reservedTables.length === 0 ? (
+              <div className="text-gray-600 mb-4">
+                No tables selected for reservation.
+              </div>
+            ) : (
+              reservedTables.map((table) => (
+                <div key={table.table_id} className="mb-4">
+                  <div className="font-semibold mb-2">
+                    Table {table.tabel_id}
+                  </div>
+                  <div className="flex gap-2">
+                    <label>
+                      From:
+                      <input
+                        type="time"
+                        value={reservationTimes[table.table_id]?.from || ""}
+                        onChange={(e) =>
+                          handleTimeChange(
+                            table.table_id,
+                            "from",
+                            e.target.value
+                          )
+                        }
+                        className="ml-2 border rounded px-2 py-1"
+                      />
+                    </label>
+                    <label>
+                      To:
+                      <input
+                        type="time"
+                        value={reservationTimes[table.table_id]?.to || ""}
+                        onChange={(e) =>
+                          handleTimeChange(table.table_id, "to", e.target.value)
+                        }
+                        className="ml-2 border rounded px-2 py-1"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))
+            )}
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveTables2}
+                className="px-3 py-1 rounded bg-primary-dark text-white"
+                disabled={reservedTables.length === 0}
+              >
+                Submit Reservation
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-lg max-w-md w-full relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <div className="text-lg font-bold mb-4">Reserve Tables</div>
+            <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+              Today: {new Date().toLocaleDateString()}
+            </div>
+            {reservedTables.length === 0 ? (
+              <div className="text-gray-600 mb-4">
+                No tables selected for reservation.
+              </div>
+            ) : (
+              reservedTables.map((table) => (
+                <div key={table.table_id} className="mb-4">
+                  <div className="font-semibold mb-2">
+                    Table {table.tabel_id}
+                  </div>
+                  <div className="flex gap-2">
+                    <label>
+                      From:
+                      <input
+                        type="time"
+                        value={reservationTimes[table.table_id]?.from || ""}
+                        onChange={(e) =>
+                          handleTimeChange(
+                            table.table_id,
+                            "from",
+                            e.target.value,
+                          )
+                        }
+                        className="ml-2 border rounded px-2 py-1"
+                      />
+                    </label>
+                    <label>
+                      To:
+                      <input
+                        type="time"
+                        value={reservationTimes[table.table_id]?.to || ""}
+                        onChange={(e) =>
+                          handleTimeChange(table.table_id, "to", e.target.value)
+                        }
+                        className="ml-2 border rounded px-2 py-1"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))
+            )}
+            {/* <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveTables2}
+                className="px-3 py-1 rounded bg-primary-dark text-white"
+                disabled={reservedTables.length === 0}
+              >
+                Submit Reservation
+              </button>
+            </div> */}
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-3 py-1 rounded bg-gray-300 dark:bg-gray-700"
+              >
+                Cancel
+              </button>
+              {reservedTables.length > 0 && (
+                <button
+                  onClick={saveTables2}
+                  className="px-3 py-1 rounded bg-primary-dark text-white"
+                >
+                  Submit Reservation
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
