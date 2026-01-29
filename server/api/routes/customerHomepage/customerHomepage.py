@@ -19,8 +19,9 @@ def get_cafes():
                 "cafe_name": cafe.cafe_name,
                 "seats_available": 10 if cafe.cafe_name == 'Hot Wok' else 0,
                 "location": {
+                    # relationship attribute 'location' used to get location details
                     "id": cafe.location.id if cafe.location else None,
-                    "name": cafe.location.location if cafe.location else "Unknown"
+                    "name": cafe.location.location if cafe.location else "Unknown" 
                 }
             }
             for cafe in cafes

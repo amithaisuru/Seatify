@@ -84,12 +84,6 @@ function CafeLayoutPage() {
           </div>
           <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
             <div className="w-full">
-              {/* <CafeLayout
-                tables={tables}
-                chairs={chairs}
-                editable={true}
-                fetchCafeLayout={fetchCafeLayout}
-              /> */}
               <NewCafeLayout
                 tables={tables}
                 editable={true}

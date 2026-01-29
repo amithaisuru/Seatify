@@ -12,6 +12,7 @@ login_bp = Blueprint('login', __name__)
 def login():
     try:
         data = request.get_json()
+        # verify user credentials
         if not data or not data.get('email') or not data.get('password'):
             return jsonify({"error": "Missing email or password"}), 400
 
@@ -19,7 +20,7 @@ def login():
 
         if not user or not check_password_hash(user.password, data['password']):
             return jsonify({"error": "Invalid email or password"}), 401
-        
+        # Access token generation
         access_token = create_access_token(
             identity=str(user.id),
             additional_claims={"user_type": user.user_type},
